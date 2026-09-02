@@ -1,43 +1,64 @@
 Algoritmo SIGAM
-	Definir Chofer1 Como Caracter;
-	Definir ClaveChofer1 Como Caracter;
-	Definir Cliente1 Como Caracter;
-	Definir ClaveCLiente1 Como Caracter;
-	Definir Admin1 Como Caracter;
-	Definir ClaveAdmin1 Como Caracter;
-	Definir Soporte1 Como Caracter;
-	Definir ClaveSoporte1 Como Caracter;
-	Definir usuario Como Caracter
-	definir contraseña como caracter
 	
+	Escribir "=========================================="
+	Escribir "        Bienvenido a SIGAM                "
+	Escribir "=========================================="
+	Escribir "";
 	
+	//Variables generales
+	Definir usuario, password  Como Caracter; 
+	Definir opcionUsuario Como Entero;
+	Definir loginActivo Como Logico;
+	
+	// Devuelve mensaje de error 
 	Usuario = "Incorrecto"
 	Mientras Usuario == "Incorrecto" Hacer
-		InicioSesion(usuario, contraseña);
-		Usuario <-ValidaLogin (usuario, contraseña)
+		InicioSesion(usuario, password);
+		Usuario <- ValidaLogin (usuario, password)
 		
 		si Usuario == "Incorrecto" Entonces
-			Escribir "Usuario o contraseña incorrectos"
+			Escribir "Error: Usuario o contraseña incorrecta"
 		FinSi
 		
 	FinMientras
 	
-	Segun Usuario Hacer
-		"Chofer" :
-			MenuChofer
-		"Cliente" :
-			MenuCliente
-		"Admin" :
-			MenuAdmin
-		"Soporte" :
-			MenuSoporte
-	FinSegun
 	
+	// Al iniciar sesión, limpiará la pantalla de la consola para mostrar correctamente los menús
+	Limpiar Pantalla;
 	
+	loginActivo <- Verdadero;
 	
+	Mientras loginActivo Hacer
+		Segun Usuario Hacer
+			"Chofer" :
+				MenuChofer(opcionUsuario)
+				
+				Si opcionUsuario == 9 Entonces
+					loginActivo <- Falso
+				FinSi
+			"Cliente" :
+				MenuCliente(opcionUsuario)
+				
+				Si opcionUsuario == 6 Entonces
+					loginActivo <- Falso
+				FinSi
+			"Admin" :
+				MenuAdmin(opcionUsuario)
+				
+				Si opcionUsuario == 6 Entonces
+					loginActivo <- Falso
+				FinSi
+			"Soporte" :
+				MenuSoporte(opcionUsuario)
+				
+				Si opcionUsuario == 4 Entonces
+					loginActivo <- Falso
+				FinSi
+		FinSegun
+	Fin Mientras	 
 FinAlgoritmo
 
-SubAlgoritmo  MenuChofer
+SubAlgoritmo MenuChofer(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Chofer                "
 	Escribir "=========================================="
@@ -52,9 +73,10 @@ SubAlgoritmo  MenuChofer
 	Escribir "8) Ver historial de ganancias";
 	Escribir "9) Cerrar sesión";
 	Escribir Sin Saltar "Ingrese una opcion: ";
+	Leer opcionUsuario;
 FinSubAlgoritmo
 
-SubAlgoritmo  MenuCliente
+SubAlgoritmo  MenuCliente(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Cliente               "
 	Escribir "=========================================="
@@ -66,9 +88,10 @@ SubAlgoritmo  MenuCliente
 	Escribir "5) Ver historial";
 	Escribir "6) Cerrar sesión";
 	Escribir Sin Saltar "Ingrese una opcion: ";
+	Leer opcionUsuario;
 FinSubAlgoritmo
 
-SubAlgoritmo  MenuAdmin
+SubAlgoritmo  MenuAdmin(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Admin                 "
 	Escribir "=========================================="
@@ -80,10 +103,10 @@ SubAlgoritmo  MenuAdmin
 	Escribir "5) Consultar estadisticas";
 	Escribir "6) Cerrar sesión";
 	Escribir Sin Saltar "Ingrese una opcion: ";
+	Leer opcionUsuario;
 FinSubAlgoritmo
 
-
-SubAlgoritmo  MenuSoporte 
+SubAlgoritmo  MenuSoporte(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Soporte               "
 	Escribir "=========================================="
@@ -93,23 +116,28 @@ SubAlgoritmo  MenuSoporte
 	Escribir "3) Ver historial de incidencias";
 	Escribir "4) Cerrar sesión";
 	Escribir Sin Saltar "Ingrese una opcion: ";
+	Leer opcionUsuario;
 FinSubAlgoritmo
 
-//subalgotirmo que solamente solicita el login correspondiente//
+//Inicio de sesión
 SubAlgoritmo  InicioSesion(user Por Referencia, pasw Por Referencia)
-	Escribir "=========================================="
-	Escribir "        Bienvenido a SIGAM                "
-	Escribir "=========================================="
-	Escribir "";
+	
 	Escribir "Ingrese su usuario";
 	leer user
 	Escribir "Ingrese su contraseña";
 	Leer pasw
 FinSubAlgoritmo
-//funcion que valida las credenciales hardcodeadas para acceder a los menus//
-Funcion Usuario <-ValidaLogin (usu, psw)
+
+//Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
+Funcion tipoUsuario <- ValidaLogin (usu, psw) 
 	
-	//Credenciales hardcodeadas de los usuarios//
+	Definir Chofer1, ClaveChofer1 Como Caracter; 	     // Variables Chofer
+	Definir Cliente1, ClaveCliente1 Como Caracter;    // Variables Cliente 
+	Definir Admin1, ClaveAdmin1 Como Caracter;       // Variables Administrador
+	Definir soporte1, ClaveSoporte1 Como Caracter   // Variables Soporte	
+	Definir tipoUsuario Como Caracter;             // Variable para el tipo de usuario
+	
+	//Credenciales hardcodeadas de los diferentes usuarios
 	Chofer1 = "Chofer1";
 	ClaveChofer1= "Chofer123";
 	
@@ -122,20 +150,19 @@ Funcion Usuario <-ValidaLogin (usu, psw)
 	Soporte1 = "Soporte1";
 	ClaveSoporte1 = "Soporte123";
 	
-	si usu == Chofer1 y psw == ClaveChofer1 Entonces
-		Usuario = "Chofer"
-	sino
+	tipoUsuario = "Incorrecto"
+	
+	Si usu == Chofer1 y psw == ClaveChofer1 Entonces
+		tipoUsuario = "Chofer"
+	SiNo
 		si usu == Cliente1 y psw == ClaveCliente1 Entonces
-			Usuario = "Cliente"
-		sino 
+			tipoUsuario = "Cliente"
+		SiNo 
 			si usu == Admin1 y psw == ClaveAdmin1 Entonces
-				Usuario = "Admin"
-			sino 
+				tipoUsuario = "Admin"
+			SiNo 
 				si usu == Soporte1 y psw == ClaveSoporte1 Entonces
-					Usuario = "Soporte"
-				SiNo
-						Usuario = "Incorrecto"
-						
+					tipoUsuario = "Soporte"
 				FinSi
 			FinSi
 		FinSi
