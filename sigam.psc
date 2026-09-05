@@ -6,12 +6,12 @@ Algoritmo SIGAM
 	Escribir "";
 	
 	//Variables generales
-	Definir usuario, password, auxilio Como Caracter; 
+	Definir usuario, password,ubicacion,tipoVehiculo,situacion Como Caracter; 
 	Definir opcionUsuario Como Entero;
-	Definir loginActivo Como Logico;
+	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	
-	Mientras verdadero// Devuelve mensaje de error 
+	Mientras verdadero hacer// Devuelve mensaje de error 
 		valorUsuario = "Incorrecto"
 		Mientras valorUsuario == "Incorrecto" Hacer
 			inicioSesion(usuario, password);
@@ -51,7 +51,14 @@ Algoritmo SIGAM
 				"Cliente" :
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:auxilio <- solicitarAuxilio(opcionUsuario);
+						1:solicitudConfirmada <- solicitarAuxilio(ubicacion,tipoVehiculo,situacion);
+							Si solicitudConfirmada Entonces
+								Escribir "Solicitud confirmada. Aguarde la asignacion.";
+								Escribir "Ubicacion guardada: ", ubicacion;
+								Escribir "Tipo de vehiculo: ", tipoVehiculo;
+							SiNo
+								Escribir "La solicitud fue cancelada"; 
+							FinSi
 						2:
 						3:
 						4:
@@ -193,7 +200,7 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	soporte1 = "soporte1";
 	claveSoporte1 = "soporte123";
 	
-	tipoUsuario = "incorrecto"
+	tipoUsuario = "Incorrecto"
 	
 	Si usu == chofer1 y psw == claveChofer1 Entonces
 		tipoUsuario = "Chofer"
@@ -212,9 +219,9 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	FinSi
 FinFuncion
 
-Funcion auxilio <- solicitarAuxilio(opcionUsuario) 
-	Definir auxilio, ubicacion, tipoVehiculo, situacion Como Caracter;
+Funcion confirmada <- solicitarAuxilio(ubicacion Por Referencia, tipoVehiculo Por Referencia, situacion Por Referencia)
 	Definir confirmar como entero; 
+	Definir confirmada Como Logico
 	Limpiar Pantalla;
 	Escribir "==========SOLICITAR AUXILIO==========";
 	Escribir " ";
@@ -240,9 +247,9 @@ Funcion auxilio <- solicitarAuxilio(opcionUsuario)
 	FinMientras
 	
 	si confirmar = 1 Entonces
-		auxilio="La solicitud fue ingresada con exito";
+		confirmada=Verdadero;
 	SiNo
-		auxilio="La solicitud fue cancelada"; 
+		confirmada=Falso; 
 	FinSi
 	Limpiar Pantalla
 FinFuncion
