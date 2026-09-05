@@ -11,69 +11,94 @@ Algoritmo SIGAM
 	Definir loginActivo Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	
-	// Devuelve mensaje de error 
-	valorUsuario = "Incorrecto"
-	Mientras valorUsuario == "Incorrecto" Hacer
-		inicioSesion(usuario, password);
-		valorUsuario <- validaLogin (usuario, password)
+	Mientras verdadero// Devuelve mensaje de error 
+		valorUsuario = "Incorrecto"
+		Mientras valorUsuario == "Incorrecto" Hacer
+			inicioSesion(usuario, password);
+			valorUsuario <- validaLogin (usuario, password)
+			
+			si valorUsuario == "Incorrecto" Entonces
+				Escribir "Error: Usuario o contraseña incorrecta"
+			FinSi
+			
+		FinMientras
 		
-		si valorUsuario == "Incorrecto" Entonces
-			Escribir "Error: Usuario o contraseña incorrecta"
-		FinSi
 		
+		// Al iniciar sesión, limpiará la pantalla de la consola para mostrar correctamente los menús
+		Limpiar Pantalla;
+		
+		loginActivo <- Verdadero;
+		
+		Mientras loginActivo Hacer
+			Segun valorUsuario Hacer
+				"Chofer" :
+					menuChofer(opcionUsuario)
+					Segun opcionUsuario Hacer
+						1:
+						2:
+						3:
+						4:
+						5:
+						6:
+						7: 
+						8:
+						9: loginActivo <- Falso	
+						De Otro Modo:
+							escribir "La opcion ingresada no es valida.Por favor intente nuevamente"
+							esperar 1.5 segundo 
+							Limpiar Pantalla
+					FinSegun
+				"Cliente" :
+					menuCliente(opcionUsuario)
+					Segun opcionUsuario Hacer
+						1:
+						2:
+						3:
+						4:
+						5:
+						6:loginActivo <- Falso
+						De Otro Modo:
+							escribir "La opcion ingresada no es valida.Por favor intente nuevamente"
+							esperar 1.5 segundo 
+							Limpiar Pantalla
+					FinSegun
+				"Admin" :
+					menuAdmin(opcionUsuario)
+					Segun opcionUsuario Hacer
+						1:
+						2:
+						3:
+						4:
+						5:
+						6:loginActivo <- Falso
+						De Otro Modo:
+							escribir "La opcion ingresada no es valida.Por favor intente nuevamente"
+							esperar 1.5 segundo 
+							Limpiar Pantalla
+					FinSegun
+				"Soporte" :
+					menuSoporte(opcionUsuario)
+					Segun opcionUsuario Hacer
+						1:
+						2:
+						3:
+						4:loginActivo <- Falso
+						De Otro Modo:
+							escribir "La opcion ingresada no es valida.Por favor intente nuevamente"
+							esperar 1.5 segundo 
+							Limpiar Pantalla
+					FinSegun
+			FinSegun
+		Fin Mientras	 
+		escribir "Cerrando sesion..."
+		Esperar 1.5 segundos
+		Limpiar Pantalla
+		Escribir "=========================================="
+		Escribir "        Bienvenido a SIGAM                "
+		Escribir "=========================================="
+		Escribir "";
 	FinMientras
 	
-	
-	// Al iniciar sesión, limpiará la pantalla de la consola para mostrar correctamente los menús
-	Limpiar Pantalla;
-	
-	loginActivo <- Verdadero;
-	
-	Mientras loginActivo Hacer
-		Segun valorUsuario Hacer
-			"Chofer" :
-				menuChofer(opcionUsuario)
-				Segun opcionUsuario Hacer
-					1:
-					2:
-					3:
-					4:
-					5:
-					6:
-					7: 
-					8:
-					9: loginActivo <- Falso	
-				FinSegun
-			"Cliente" :
-				menuCliente(opcionUsuario)
-				Segun opcionUsuario Hacer
-					1:
-					2:
-					3:
-					4:
-					5:
-					6:loginActivo <- Falso
-				FinSegun
-			"Admin" :
-				menuAdmin(opcionUsuario)
-				Segun opcionUsuario Hacer
-					1:
-					2:
-					3:
-					4:
-					5:
-					6:loginActivo <- Falso
-				FinSegun
-			"Soporte" :
-				menuSoporte(opcionUsuario)
-				Segun opcionUsuario Hacer
-					1:
-					2:
-					3:
-					4:loginActivo <- Falso
-				FinSegun
-		FinSegun
-	Fin Mientras	 
 FinAlgoritmo
 
 SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
