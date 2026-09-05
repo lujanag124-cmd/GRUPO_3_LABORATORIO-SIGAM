@@ -9,14 +9,15 @@ Algoritmo SIGAM
 	Definir usuario, password  Como Caracter; 
 	Definir opcionUsuario Como Entero;
 	Definir loginActivo Como Logico;
+	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	
 	// Devuelve mensaje de error 
-	Usuario = "Incorrecto"
-	Mientras Usuario == "Incorrecto" Hacer
-		InicioSesion(usuario, password);
-		Usuario <- ValidaLogin (usuario, password)
+	valorUsuario = "Incorrecto"
+	Mientras valorUsuario == "Incorrecto" Hacer
+		inicioSesion(usuario, password);
+		valorUsuario <- validaLogin (usuario, password)
 		
-		si Usuario == "Incorrecto" Entonces
+		si valorUsuario == "Incorrecto" Entonces
 			Escribir "Error: Usuario o contraseña incorrecta"
 		FinSi
 		
@@ -29,27 +30,27 @@ Algoritmo SIGAM
 	loginActivo <- Verdadero;
 	
 	Mientras loginActivo Hacer
-		Segun Usuario Hacer
+		Segun valorUsuario Hacer
 			"Chofer" :
-				MenuChofer(opcionUsuario)
+				menuChofer(opcionUsuario)
 				
 				Si opcionUsuario == 9 Entonces
 					loginActivo <- Falso
 				FinSi
 			"Cliente" :
-				MenuCliente(opcionUsuario)
+				menuCliente(opcionUsuario)
 				
 				Si opcionUsuario == 6 Entonces
 					loginActivo <- Falso
 				FinSi
 			"Admin" :
-				MenuAdmin(opcionUsuario)
+				menuAdmin(opcionUsuario)
 				
 				Si opcionUsuario == 6 Entonces
 					loginActivo <- Falso
 				FinSi
 			"Soporte" :
-				MenuSoporte(opcionUsuario)
+				menuSoporte(opcionUsuario)
 				
 				Si opcionUsuario == 4 Entonces
 					loginActivo <- Falso
@@ -58,7 +59,7 @@ Algoritmo SIGAM
 	Fin Mientras	 
 FinAlgoritmo
 
-SubAlgoritmo MenuChofer(opcionUsuario Por Referencia)
+SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Chofer                "
 	Escribir "=========================================="
@@ -76,7 +77,7 @@ SubAlgoritmo MenuChofer(opcionUsuario Por Referencia)
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
-SubAlgoritmo  MenuCliente(opcionUsuario Por Referencia)
+SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Cliente               "
 	Escribir "=========================================="
@@ -91,7 +92,7 @@ SubAlgoritmo  MenuCliente(opcionUsuario Por Referencia)
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
-SubAlgoritmo  MenuAdmin(opcionUsuario Por Referencia)
+SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Admin                 "
 	Escribir "=========================================="
@@ -106,7 +107,7 @@ SubAlgoritmo  MenuAdmin(opcionUsuario Por Referencia)
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
-SubAlgoritmo  MenuSoporte(opcionUsuario Por Referencia)
+SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Soporte               "
 	Escribir "=========================================="
@@ -120,7 +121,7 @@ SubAlgoritmo  MenuSoporte(opcionUsuario Por Referencia)
 FinSubAlgoritmo
 
 //Inicio de sesión
-SubAlgoritmo  InicioSesion(user Por Referencia, pasw Por Referencia)
+SubAlgoritmo  inicioSesion(user Por Referencia, pasw Por Referencia)
 	
 	Escribir "Ingrese su usuario";
 	leer user
@@ -129,39 +130,39 @@ SubAlgoritmo  InicioSesion(user Por Referencia, pasw Por Referencia)
 FinSubAlgoritmo
 
 //Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
-Funcion tipoUsuario <- ValidaLogin (usu, psw) 
+Funcion tipoUsuario <- validaLogin (usu, psw) 
 	
-	Definir Chofer1, ClaveChofer1 Como Caracter; 	     // Variables Chofer
-	Definir Cliente1, ClaveCliente1 Como Caracter;    // Variables Cliente 
-	Definir Admin1, ClaveAdmin1 Como Caracter;       // Variables Administrador
-	Definir soporte1, ClaveSoporte1 Como Caracter   // Variables Soporte	
+	Definir chofer1, claveChofer1 Como Caracter; 	     // Variables Chofer
+	Definir cliente1, claveCliente1 Como Caracter;    // Variables Cliente 
+	Definir admin1, claveAdmin1 Como Caracter;       // Variables Administrador
+	Definir soporte1, claveSoporte1 Como Caracter   // Variables Soporte	
 	Definir tipoUsuario Como Caracter;             // Variable para el tipo de usuario
 	
 	//Credenciales hardcodeadas de los diferentes usuarios
-	Chofer1 = "Chofer1";
-	ClaveChofer1= "Chofer123";
+	chofer1 = "Chofer1";
+	claveChofer1= "Chofer123";
 	
-	Cliente1 = "Cliente1";
-	ClaveCliente1 = "Cliente123";
+	cliente1 = "Cliente1";
+	claveCliente1 = "Cliente123";
 	
-	Admin1 = "Admin1";
-	ClaveAdmin1 = "Admin123";
+	admin1 = "Admin1";
+	claveAdmin1 = "Admin123";
 	
-	Soporte1 = "Soporte1";
-	ClaveSoporte1 = "Soporte123";
+	soporte1 = "Soporte1";
+	claveSoporte1 = "Soporte123";
 	
 	tipoUsuario = "Incorrecto"
 	
-	Si usu == Chofer1 y psw == ClaveChofer1 Entonces
+	Si usu == chofer1 y psw == claveChofer1 Entonces
 		tipoUsuario = "Chofer"
 	SiNo
-		si usu == Cliente1 y psw == ClaveCliente1 Entonces
+		si usu == cliente1 y psw == claveCliente1 Entonces
 			tipoUsuario = "Cliente"
 		SiNo 
-			si usu == Admin1 y psw == ClaveAdmin1 Entonces
+			si usu == admin1 y psw == claveAdmin1 Entonces
 				tipoUsuario = "Admin"
 			SiNo 
-				si usu == Soporte1 y psw == ClaveSoporte1 Entonces
+				si usu == soporte1 y psw == claveSoporte1 Entonces
 					tipoUsuario = "Soporte"
 				FinSi
 			FinSi
