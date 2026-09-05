@@ -33,28 +33,45 @@ Algoritmo SIGAM
 		Segun valorUsuario Hacer
 			"Chofer" :
 				menuChofer(opcionUsuario)
-				
-				Si opcionUsuario == 9 Entonces
-					loginActivo <- Falso
-				FinSi
+				Segun opcionUsuario Hacer
+					1:
+					2:
+					3:
+					4:
+					5:
+					6:
+					7: 
+					8:
+					9: loginActivo <- Falso	
+				FinSegun
 			"Cliente" :
 				menuCliente(opcionUsuario)
-				
-				Si opcionUsuario == 6 Entonces
-					loginActivo <- Falso
-				FinSi
+				Segun opcionUsuario Hacer
+					1:
+					2:
+					3:
+					4:
+					5:
+					6:loginActivo <- Falso
+				FinSegun
 			"Admin" :
 				menuAdmin(opcionUsuario)
-				
-				Si opcionUsuario == 6 Entonces
-					loginActivo <- Falso
-				FinSi
+				Segun opcionUsuario Hacer
+					1:
+					2:
+					3:
+					4:
+					5:
+					6:loginActivo <- Falso
+				FinSegun
 			"Soporte" :
 				menuSoporte(opcionUsuario)
-				
-				Si opcionUsuario == 4 Entonces
-					loginActivo <- Falso
-				FinSi
+				Segun opcionUsuario Hacer
+					1:
+					2:
+					3:
+					4:loginActivo <- Falso
+				FinSegun
 		FinSegun
 	Fin Mientras	 
 FinAlgoritmo
@@ -139,19 +156,19 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	Definir tipoUsuario Como Caracter;             // Variable para el tipo de usuario
 	
 	//Credenciales hardcodeadas de los diferentes usuarios
-	chofer1 = "Chofer1";
-	claveChofer1= "Chofer123";
+	chofer1 = "chofer1";
+	claveChofer1= "chofer123";
 	
-	cliente1 = "Cliente1";
-	claveCliente1 = "Cliente123";
+	cliente1 = "cliente1";
+	claveCliente1 = "cliente123";
 	
-	admin1 = "Admin1";
-	claveAdmin1 = "Admin123";
+	admin1 = "admin1";
+	claveAdmin1 = "admin123";
 	
-	soporte1 = "Soporte1";
-	claveSoporte1 = "Soporte123";
+	soporte1 = "soporte1";
+	claveSoporte1 = "soporte123";
 	
-	tipoUsuario = "Incorrecto"
+	tipoUsuario = "incorrecto"
 	
 	Si usu == chofer1 y psw == claveChofer1 Entonces
 		tipoUsuario = "Chofer"
