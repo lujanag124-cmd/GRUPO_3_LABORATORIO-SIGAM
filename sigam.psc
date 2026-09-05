@@ -6,7 +6,7 @@ Algoritmo SIGAM
 	Escribir "";
 	
 	//Variables generales
-	Definir usuario, password  Como Caracter; 
+	Definir usuario, password, auxilio Como Caracter; 
 	Definir opcionUsuario Como Entero;
 	Definir loginActivo Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
@@ -51,7 +51,7 @@ Algoritmo SIGAM
 				"Cliente" :
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:
+						1:auxilio <- solicitarAuxilio(opcionUsuario);
 						2:
 						3:
 						4:
@@ -211,4 +211,38 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 		FinSi
 	FinSi
 FinFuncion
+
+Funcion auxilio <- solicitarAuxilio(opcionUsuario) 
+	Definir auxilio, ubicacion, tipoVehiculo, situacion Como Caracter;
+	Definir confirmar como entero; 
+	Limpiar Pantalla;
+	Escribir "==========SOLICITAR AUXILIO==========";
+	Escribir " ";
+	Escribir "-----Por favor complete las siguientes solicitudes-----";
+	Escribir " ";
+	Escribir "Ingrese la ubicación: ";
+	Leer ubicacion;
+	Escribir "Ingese el tipo de vehiculo: ";
+	Leer tipoVehiculo;
+	Escribir "Describa (de manera objetiva) la situación: ";
+	Leer situacion;
+	Escribir "Ubicacion: ", ubicacion; 
+	Escribir "Datos del vehiculo: ", tipoVehiculo;
+	Escribir "Situacion : ", situacion;
+	Escribir "---------------------------";
+	Escribir "Ingrese 1) Para confimar la solicitud"
+	Escribir "Ingrese 2) Para cancelar la misma"
+	Leer confirmar;
 	
+	Mientras  confirmar <> 1 y confirmar <> 2 Hacer
+		Escribir "Por favor ingrese una opcion correcta: ";
+		Leer confirmar;
+	FinMientras
+	
+	si confirmar = 1 Entonces
+		auxilio="La solicitud fue ingresada con exito";
+	SiNo
+		auxilio="La solicitud fue cancelada"; 
+	FinSi
+	Limpiar Pantalla
+FinFuncion
