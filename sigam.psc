@@ -6,11 +6,36 @@ Algoritmo SIGAM
 	Escribir "";
 	
 	//Variables generales
-	Definir usuario, password,ubicacion,tipoVehiculo,situacion Como Caracter; 
+	Definir usuario, password,ubicaciones,tipoVehiculos,situaciones, patentes Como Caracter;
+	Definir solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones Como Caracter;
 	Definir opcionUsuario Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	
+	Dimension solicitudUbicaciones[10];
+	Dimension solicitudTipoVehiculos[10];
+	Dimension solicitudsituaciones[10];
+	Dimension patentes[10];
+	
+	Dimension ubicaciones[3];
+	Dimension tipoVehiculos[3];
+	Dimension situaciones[3];
+	
+	
+	ubicaciones[0]= "Merlo";
+	ubicaciones[1] ="Ituzaingo";
+	ubicaciones[2] ="Moron";
+	
+	tipoVehiculos[0]="Moto";
+	tipoVehiculos[1]="Auto";
+	tipoVehiculos[2]="Camioneta";
+	
+	situaciones[0]="Pinchadura ";
+	situaciones[1]="Falla mecanica ";
+	situaciones[2]="Accidente/Choque ";
+	
+	Definir cantSolicitudes como entero
+	cantSolicitudes=0
 	Mientras verdadero hacer// Devuelve mensaje de error 
 		valorUsuario = "Incorrecto"
 		Mientras valorUsuario == "Incorrecto" Hacer
@@ -51,11 +76,12 @@ Algoritmo SIGAM
 				"Cliente" :
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:solicitudConfirmada <- solicitarAuxilio(ubicacion,tipoVehiculo,situacion);
+						1:solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,ubicaciones, tipovehiculos,situaciones,patentes)
 							Si solicitudConfirmada Entonces
 								Escribir "Solicitud confirmada. Aguarde la asignacion.";
-								Escribir "Ubicacion guardada: ", ubicacion;
-								Escribir "Tipo de vehiculo: ", tipoVehiculo;
+								Escribir "Ubicacion guardada: ", solicitudUbicaciones[cantSolicitudes - 1];
+								Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[cantSolicitudes - 1];
+								Escribir "Patente: ", patentes[cantSolicitudes-1]
 							SiNo
 								Escribir "La solicitud fue cancelada"; 
 							FinSi
@@ -122,6 +148,7 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "7) Finalizar viaje";
 	Escribir "8) Ver historial de ganancias";
 	Escribir "9) Cerrar sesión";
+	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
@@ -137,6 +164,7 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "4) Calificar servicio";
 	Escribir "5) Ver historial";
 	Escribir "6) Cerrar sesión";
+	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
@@ -152,6 +180,7 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "4) Configurar distancias";
 	Escribir "5) Consultar estadisticas";
 	Escribir "6) Cerrar sesión";
+	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
@@ -165,6 +194,7 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "2) Gestionar incidencia";
 	Escribir "3) Ver historial de incidencias";
 	Escribir "4) Cerrar sesión";
+	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
@@ -219,23 +249,47 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	FinSi
 FinFuncion
 
-Funcion confirmada <- solicitarAuxilio(ubicacion Por Referencia, tipoVehiculo Por Referencia, situacion Por Referencia)
+Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
 	Definir confirmar como entero; 
 	Definir confirmada Como Logico
+	Definir opcionUbicaciones Como Entero
+	Definir opcionSituaciones Como Entero
+	Definir opcionVehiculos Como Entero
+	
 	Limpiar Pantalla;
-	Escribir "==========SOLICITAR AUXILIO==========";
+	Escribir "==================SOLICITAR AUXILIO====================";
 	Escribir " ";
 	Escribir "-----Por favor complete las siguientes solicitudes-----";
 	Escribir " ";
 	Escribir "Ingrese la ubicación: ";
-	Leer ubicacion;
+	Escribir "1) Merlo"
+	Escribir "2) Ituzaingo"
+	Escribir "3) Moron"
+	leer opcionUbicaciones;
+	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
+	
 	Escribir "Ingese el tipo de vehiculo: ";
-	Leer tipoVehiculo;
-	Escribir "Describa (de manera objetiva) la situación: ";
-	Leer situacion;
-	Escribir "Ubicacion: ", ubicacion; 
-	Escribir "Datos del vehiculo: ", tipoVehiculo;
-	Escribir "Situacion : ", situacion;
+	Escribir "1) Moto"
+	Escribir "2) Auto"
+	Escribir "3) Camioneta"
+	leer opcionVehiculos;
+	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
+	
+	Escribir "Seleccione la situación: ";
+	Escribir "1) Pinchadura"
+	Escribir "2) Falla mecanica"
+	Escribir "3) Accidente/Choque"
+	Leer opcionSituaciones;
+	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
+	
+	Escribir "Ingrese su patente: ";
+	Leer patentes[cantSolicitudes]
+	
+	Limpiar Pantalla
+	Escribir "Ubicacion: ", ubicaciones[opcionUbicaciones-1]; 
+	Escribir "Datos del vehiculo: ", tipoVehiculos[opcionVehiculos-1];
+	Escribir "Situacion : ", situaciones[opcionSituaciones-1];
+	Escribir "Patente: ", patentes[cantsolicitudes]
 	Escribir "---------------------------";
 	Escribir "Ingrese 1) Para confimar la solicitud"
 	Escribir "Ingrese 2) Para cancelar la misma"
@@ -248,6 +302,8 @@ Funcion confirmada <- solicitarAuxilio(ubicacion Por Referencia, tipoVehiculo Po
 	
 	si confirmar = 1 Entonces
 		confirmada=Verdadero;
+		cantSolicitudes=cantSolicitudes+1
+		
 	SiNo
 		confirmada=Falso; 
 	FinSi
