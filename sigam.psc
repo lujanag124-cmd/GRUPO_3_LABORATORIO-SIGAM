@@ -9,7 +9,7 @@ Algoritmo SIGAM
 	Definir usuario, password,ubicaciones,tipoVehiculos,situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones Como Caracter;
 	Definir opcionUsuario Como Entero;
-	Definir loginActivo, solicitudConfirmada Como Logico;
+	Definir loginActivo, solicitudConfirmada, choferEncontrado Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles Como Caracter
 	//Estos vectores determinan la cantidad total de solicitudes que tiene el programa, el valor es random
@@ -55,23 +55,23 @@ Algoritmo SIGAM
 	clavesChoferes[1] = "chofer123";
 	clavesChoferes[2] = "chofer123";
 	
-	estadosChoferes[0]="disponible";
-	estadosChoferes[1]="ocupado";
-	estadosChoferes[2]="disponible";
+	estadosChoferes[0]="Disponible";
+	estadosChoferes[1]="Ocupado";
+	estadosChoferes[2]="Disponible";
 	
-	tiposGrua[0]="auto";
-	tiposGrua[1]="moto";
-	tiposGrua[2]="camioneta";
+	tiposGrua[0]="Auto";
+	tiposGrua[1]="Moto";
+	tiposGrua[2]="Camioneta";
 	
-	localidadesChoferes[0]="ituzaingo";
-	localidadesChoferes[1]="moron";
-	localidadesChoferes[2]="merlo";
+	localidadesChoferes[0]="Ituzaingo";
+	localidadesChoferes[1]="Moron";
+	localidadesChoferes[2]="Merlo";
 	
 	Dimension estadosDisponibles[3];
 	
-	estadosDisponibles[0]="disponible";
-	estadosDisponibles[1]="ocupado";
-	estadosDisponibles[2]="no disponible";
+	estadosDisponibles[0]="Disponible";
+	estadosDisponibles[1]="Ocupado";
+	estadosDisponibles[2]="No disponible";
 	
 	
 	Definir cantSolicitudes como entero
@@ -124,6 +124,12 @@ Algoritmo SIGAM
 								Escribir "Patente: ", patentes[cantSolicitudes-1]
 							SiNo
 								Escribir "La solicitud fue cancelada"; 
+							FinSi
+							choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
+							si choferEncontrado = Verdadero
+								escribir "Se encontro un chofer en la zona"
+							SiNo
+								escribir "No hay choferes disponibles en la zona"
 							FinSi
 						2:
 						3:
@@ -349,3 +355,17 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	FinSi
 	Limpiar Pantalla
 FinFuncion
+
+//Motor de busqueda en etapa beta, actualmente solo pregunta por la disponibiliada de los choferes y compara las zonas
+Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
+	Definir buscaChofer como logico
+	buscaChofer = Falso
+	Para i=0 hasta 2 con paso 1 Hacer
+		si estadosChoferes[i]= "Disponible"
+			si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
+				buscaChofer = Verdadero
+			FinSi
+		FinSi
+	FinPara
+FinFuncion
+	
