@@ -11,11 +11,13 @@ Algoritmo SIGAM
 	Definir opcionUsuario Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
-	
+	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles Como Caracter
+	//Estos vectores determinan la cantidad total de solicitudes que tiene el programa, el valor es random
 	Dimension solicitudUbicaciones[10];
 	Dimension solicitudTipoVehiculos[10];
 	Dimension solicitudsituaciones[10];
 	Dimension patentes[10];
+	
 	
 	Dimension ubicaciones[3];
 	Dimension tipoVehiculos[3];
@@ -33,6 +35,44 @@ Algoritmo SIGAM
 	situaciones[0]="Pinchadura ";
 	situaciones[1]="Falla mecanica ";
 	situaciones[2]="Accidente/Choque ";
+	
+	Dimension nombresChoferes[3];
+	Dimension usuariosChoferes[3];
+	Dimension clavesChoferes[3];
+	Dimension estadosChoferes[3];
+	Dimension tiposGrua[3];
+	Dimension localidadesChoferes[3];
+	
+	nombresChoferes[0]= "Ruben";
+	nombresChoferes[1]= "Carlos";
+	nombresChoferes[2]= "Tomi";
+	
+	usuariosChoferes[0] = "chofer1";
+	usuariosChoferes[1] = "chofer2";
+	usuariosChoferes[2] = "chofer3";
+	
+	clavesChoferes[0] = "chofer123";
+	clavesChoferes[1] = "chofer123";
+	clavesChoferes[2] = "chofer123";
+	
+	estadosChoferes[0]="disponible";
+	estadosChoferes[1]="ocupado";
+	estadosChoferes[2]="disponible";
+	
+	tiposGrua[0]="auto";
+	tiposGrua[1]="moto";
+	tiposGrua[2]="camioneta";
+	
+	localidadesChoferes[0]="ituzaingo";
+	localidadesChoferes[1]="moron";
+	localidadesChoferes[2]="merlo";
+	
+	Dimension estadosDisponibles[3];
+	
+	estadosDisponibles[0]="disponible";
+	estadosDisponibles[1]="ocupado";
+	estadosDisponibles[2]="no disponible";
+	
 	
 	Definir cantSolicitudes como entero
 	cantSolicitudes=0
