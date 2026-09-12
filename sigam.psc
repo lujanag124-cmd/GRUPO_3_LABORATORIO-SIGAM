@@ -359,6 +359,7 @@ FinFuncion
 //Motor de busqueda en etapa beta, actualmente solo pregunta por la disponibiliada de los choferes y compara las zonas
 Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
 	Definir buscaChofer como logico
+	definir i Como Entero
 	buscaChofer = Falso
 	Para i=0 hasta 2 con paso 1 Hacer
 		si estadosChoferes[i]= "Disponible"
