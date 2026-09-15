@@ -9,10 +9,11 @@ Algoritmo SIGAM
 	Definir usuario, password,ubicaciones,tipoVehiculos,situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones Como Caracter;
 	Definir opcionUsuario Como Entero;
-	Definir loginActivo, solicitudConfirmada, choferEncontrado Como Logico;
+	Definir loginActivo, solicitudConfirmada Como Logico;
+	Definir choferEncontrado Como Entero;
 	Definir valorUsuario Como Caracter;  //valorUsuario, es la variable que guarda la info de validalogin
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles Como Caracter
-	//Estos vectores determinan la cantidad total de solicitudes que tiene el programa, el valor es random
+	//Estos vectores determinan la cantidad total de solicitudes que tiene el programa, el valor es random. En esta ocación es solo para 10 solicitudes.
 	Dimension solicitudUbicaciones[10];
 	Dimension solicitudTipoVehiculos[10];
 	Dimension solicitudsituaciones[10];
@@ -75,13 +76,19 @@ Algoritmo SIGAM
 	
 	
 	Definir cantSolicitudes como entero
-	cantSolicitudes=0
+	Definir cantCanceladas Como Entero;
+	cantCanceladas=0;
+	cantSolicitudes=0;
 	Mientras verdadero hacer// Devuelve mensaje de error 
 		valorUsuario = "Incorrecto"
 		Mientras valorUsuario == "Incorrecto" Hacer
 			inicioSesion(usuario, password);
 			valorUsuario <- validaLogin (usuario, password)
-			
+			Limpiar Pantalla 
+			Escribir "=========================================="
+			Escribir "        Bienvenido a SIGAM                "
+			Escribir "=========================================="
+			Escribir "";
 			si valorUsuario == "Incorrecto" Entonces
 				Escribir "Error: Usuario o contraseña incorrecta"
 			FinSi
@@ -116,21 +123,29 @@ Algoritmo SIGAM
 				"Cliente" :
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,ubicaciones, tipovehiculos,situaciones,patentes)
-							Si solicitudConfirmada Entonces
+						1:si cantSolicitudes < 10 Entonces
+							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipovehiculos,situaciones,patentes)
+							Si solicitudConfirmada = Falso Entonces
+								Escribir "La solicitud fue cancelada";
+								Escribir "Cantidad de Solicitudes canceladas: ", cantCanceladas; 
+							SiNo
 								Escribir "Solicitud confirmada. Aguarde la asignacion.";
 								Escribir "Ubicacion guardada: ", solicitudUbicaciones[cantSolicitudes - 1];
 								Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[cantSolicitudes - 1];
 								Escribir "Patente: ", patentes[cantSolicitudes-1]
-							SiNo
-								Escribir "La solicitud fue cancelada"; 
+								choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
+								si choferEncontrado <> -1
+									escribir "Se encontro un chofer en la zona"
+									Escribir "Sele asignó el chofer : ",nombresChoferes[choferEncontrado]; 
+								SiNo
+									escribir "No hay choferes disponibles en la zona, por favor aguarde"
+								FinSi
 							FinSi
-							choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-							si choferEncontrado = Verdadero
-								escribir "Se encontro un chofer en la zona"
-							SiNo
-								escribir "No hay choferes disponibles en la zona"
-							FinSi
+						SiNo
+							Escribir "No se pueden registrar mas solicitudes. Se alcanzo el limite diario de 10 solicitudes."
+						FinSi
+						esperar 5 segundo 
+						Limpiar Pantalla
 						2:
 						3:
 						4:
@@ -247,10 +262,10 @@ FinSubAlgoritmo
 
 //Inicio de sesión
 SubAlgoritmo  inicioSesion(user Por Referencia, pasw Por Referencia)
-	
-	Escribir "Ingrese su usuario";
+	Escribir " ";
+	Escribir "Ingrese su usuario:";
 	leer user
-	Escribir "Ingrese su contraseña";
+	Escribir "Ingrese su contraseña:";
 	Leer pasw
 FinSubAlgoritmo
 
@@ -295,76 +310,97 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	FinSi
 FinFuncion
 
-Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
+Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
 	Definir confirmar como entero; 
 	Definir confirmada Como Logico
 	Definir opcionUbicaciones Como Entero
 	Definir opcionSituaciones Como Entero
 	Definir opcionVehiculos Como Entero
-	
-	Limpiar Pantalla;
-	Escribir "==================SOLICITAR AUXILIO====================";
-	Escribir " ";
-	Escribir "-----Por favor complete las siguientes solicitudes-----";
-	Escribir " ";
-	Escribir "Ingrese la ubicación: ";
-	Escribir "1) Merlo"
-	Escribir "2) Ituzaingo"
-	Escribir "3) Moron"
-	leer opcionUbicaciones;
-	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
-	
-	Escribir "Ingese el tipo de vehiculo: ";
-	Escribir "1) Moto"
-	Escribir "2) Auto"
-	Escribir "3) Camioneta"
-	leer opcionVehiculos;
-	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
-	
-	Escribir "Seleccione la situación: ";
-	Escribir "1) Pinchadura"
-	Escribir "2) Falla mecanica"
-	Escribir "3) Accidente/Choque"
-	Leer opcionSituaciones;
-	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
-	
-	Escribir "Ingrese su patente: ";
-	Leer patentes[cantSolicitudes]
-	
-	Limpiar Pantalla
-	Escribir "Ubicacion: ", ubicaciones[opcionUbicaciones-1]; 
-	Escribir "Datos del vehiculo: ", tipoVehiculos[opcionVehiculos-1];
-	Escribir "Situacion : ", situaciones[opcionSituaciones-1];
-	Escribir "Patente: ", patentes[cantsolicitudes]
-	Escribir "---------------------------";
-	Escribir "Ingrese 1) Para confimar la solicitud"
-	Escribir "Ingrese 2) Para cancelar la misma"
-	Leer confirmar;
-	
-	Mientras  confirmar <> 1 y confirmar <> 2 Hacer
-		Escribir "Por favor ingrese una opcion correcta: ";
-		Leer confirmar;
-	FinMientras
-	
-	si confirmar = 1 Entonces
-		confirmada=Verdadero;
-		cantSolicitudes=cantSolicitudes+1
+		Limpiar Pantalla;
+		Escribir "==================SOLICITAR AUXILIO====================";
+		Escribir " ";
+		Escribir "-----Por favor complete las siguientes solicitudes-----";
+		Escribir " ";
 		
-	SiNo
-		confirmada=Falso; 
-	FinSi
-	Limpiar Pantalla
+		Repetir
+			Escribir "Ingrese la ubicación: ";
+			Escribir "1) Merlo"
+			Escribir "2) Ituzaingo"
+			Escribir "3) Moron"
+			leer opcionUbicaciones;
+			si opcionUbicaciones < 1 o opcionUbicaciones > 3 Entonces
+				Limpiar Pantalla
+				Escribir "Por favor ingrese una opcion correcta: "
+			FinSi
+		Hasta Que opcionUbicaciones >= 1 y opcionUbicaciones <= 3
+		solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
+		
+		Repetir
+			Escribir "Seleccione el tipo de vehiculo que necesita auxilio: ";
+			Escribir "1) Moto"
+			Escribir "2) Auto"
+			Escribir "3) Camioneta"
+			leer opcionVehiculos;
+			si opcionVehiculos < 1 o opcionVehiculos > 3 Entonces
+				Limpiar Pantalla
+				Escribir "Por favor ingrese una opcion correcta: "
+			FinSi
+		Hasta Que opcionVehiculos >= 1 y opcionVehiculos <= 3 
+		solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
+		
+		Repetir
+			Escribir "Seleccione la situación: ";
+			Escribir "1) Pinchadura"
+			Escribir "2) Falla mecanica"
+			Escribir "3) Accidente/Choque"
+			Leer opcionSituaciones;
+			si opcionSituaciones < 1 o opcionSituaciones > 3 Entonces
+				Limpiar Pantalla
+				Escribir "Por favor ingrese una opcion correcta: "
+			FinSi
+		Hasta Que opcionSituaciones >= 1 y opcionSituaciones <= 3 
+		solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
+		
+		Escribir "Ingrese su patente, ejemplo: AB-123-CD ";
+		Leer patentes[cantSolicitudes]
+		
+		Limpiar Pantalla
+		Escribir "Ubicacion: ", ubicaciones[opcionUbicaciones-1]; 
+		Escribir "Datos del vehiculo: ", tipoVehiculos[opcionVehiculos-1];
+		Escribir "Situacion : ", situaciones[opcionSituaciones-1];
+		Escribir "Patente: ", patentes[cantsolicitudes]
+		Escribir "---------------------------";
+		Escribir "Ingrese 1) Para confimar la solicitud"
+		Escribir "Ingrese 2) Para cancelar la misma"
+		Leer confirmar;
+		
+		Mientras  confirmar <> 1 y confirmar <> 2 Hacer
+			Escribir "Por favor ingrese una opcion correcta: ";
+			Leer confirmar;
+		FinMientras
+		
+		si confirmar = 1 Entonces
+			confirmada=Verdadero;
+			cantSolicitudes=cantSolicitudes+1
+			
+		SiNo
+			confirmada=Falso; 
+			cantCanceladas=cantCanceladas+1;
+		FinSi
+		Limpiar Pantalla
 FinFuncion
 
 //Motor de busqueda en etapa beta, actualmente solo pregunta por la disponibiliada de los choferes y compara las zonas
 Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-	Definir buscaChofer como logico
+	Definir buscaChofer como entero
 	definir i Como Entero
-	buscaChofer = Falso
+	buscaChofer = -1
 	Para i=0 hasta 2 con paso 1 Hacer
-		si estadosChoferes[i]= "Disponible"
-			si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
-				buscaChofer = Verdadero
+		si buscaChofer = -1 Entonces
+			si estadosChoferes[i]= "Disponible"
+				si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
+					buscaChofer = i;
+				FinSi
 			FinSi
 		FinSi
 	FinPara
