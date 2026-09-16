@@ -125,22 +125,12 @@ Algoritmo SIGAM
 					Segun opcionUsuario Hacer
 						1:si cantSolicitudes < 10 Entonces
 							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipovehiculos,situaciones,patentes)
-							Si solicitudConfirmada = Falso Entonces
-								Escribir "La solicitud fue cancelada";
-								Escribir "Cantidad de Solicitudes canceladas: ", cantCanceladas; 
-							SiNo
-								Escribir "Solicitud confirmada. Aguarde la asignacion.";
-								Escribir "Ubicacion guardada: ", solicitudUbicaciones[cantSolicitudes - 1];
-								Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[cantSolicitudes - 1];
-								Escribir "Patente: ", patentes[cantSolicitudes-1]
+							
+							mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
+							
+							si solicitudConfirmada= Verdadero Entonces
 								choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-								si choferEncontrado <> -1
-									escribir "Se encontro un chofer en la zona"
-									Escribir "Sele asignó el chofer : ",nombresChoferes[choferEncontrado];
-									choferesAsignados[cantSolicitudes-1]=choferEncontrado;
-								SiNo
-									escribir "No hay choferes disponibles en la zona, por favor aguarde"
-								FinSi
+								motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes)
 							FinSi
 						SiNo
 							Escribir "No se pueden registrar mas solicitudes. Se alcanzo el limite diario de 10 solicitudes."
@@ -391,6 +381,21 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Limpiar Pantalla
 FinFuncion
 
+
+SubAlgoritmo mostrarSolicitudConfirmada (solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
+	Si solicitudConfirmada = Falso Entonces
+		Escribir "La solicitud fue cancelada";
+		Escribir "Cantidad de Solicitudes canceladas: ", cantCanceladas; 
+	SiNo
+		Escribir "Solicitud confirmada. Aguarde la asignacion.";
+		Escribir "Ubicacion guardada: ", solicitudUbicaciones[cantSolicitudes - 1];
+		Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[cantSolicitudes - 1];
+		Escribir "Patente: ", patentes[cantSolicitudes-1]
+	FinSi
+	
+FinSubAlgoritmo
+
+
 //Motor de busqueda en etapa beta, actualmente solo pregunta por la disponibiliada de los choferes y compara las zonas
 Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes Por Referencia)
 	Definir buscaChofer como entero
@@ -401,10 +406,21 @@ Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,loc
 			si estadosChoferes[i]= "Disponible"
 				si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
 					buscaChofer = i;
-					estadosChoferes[i]= "Ocupado"
+				//	estadosChoferes[i]= "Ocupado"
 				FinSi
 			FinSi
 		FinSi
 	FinPara
 FinFuncion
+
+SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes)
+	si choferEncontrado <> -1
+		escribir "Se encontro un chofer en la zona"
+		Escribir "Sele asignó el chofer : ",nombresChoferes[choferEncontrado];
+		choferesAsignados[cantSolicitudes-1]=choferEncontrado;
+		estadosChoferes[choferEncontrado]= "Ocupado"
+	SiNo
+		escribir "No hay choferes disponibles en la zona, por favor aguarde"
+	FinSi
+FinSubAlgoritmo
 	
