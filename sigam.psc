@@ -7,10 +7,10 @@ Algoritmo SIGAM
 	//Variables generales
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
-	Definir opcionUsuario, choferesAsignados, choferEncontrado Como Entero;
+	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
-	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles Como Caracter
+	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles,estadosServicio,estadosSolicitudes  Como Caracter
 	
 	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
@@ -22,6 +22,7 @@ Algoritmo SIGAM
 	Dimension ubicaciones[3];
 	Dimension tipoVehiculos[3];
 	Dimension situaciones[3];
+	Dimension estadosSolicitudes[10];
 	
 	ubicaciones[0]= "Merlo";
 	ubicaciones[1] ="Ituzaingo";
@@ -75,6 +76,14 @@ Algoritmo SIGAM
 	Definir cantSolicitudes, cantCanceladas Como Entero;
 	cantCanceladas=0;
 	cantSolicitudes=0;
+	
+	Dimension estadosServicio[5];
+	estadosServicio[0]="Pendiente";
+	estadosServicio[1]="Asignado";
+	estadosServicio[2]="En camino";
+	estadosServicio[3]="Finalizado";
+	estadosServicio[4]="Cancelado";
+	
 	
 	Mientras verdadero hacer
 		valorUsuario = "Incorrecto"
@@ -132,15 +141,38 @@ Algoritmo SIGAM
 							
 							si solicitudConfirmada= Verdadero Entonces
 								choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-								motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes)
+								motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
+								opcionPost <- opcionPostSolicitud
+								Segun opcionPost Hacer
+									1: si cantSolicitudes>0 Entonces	
+											Limpiar Pantalla
+											mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio)
+										SiNo
+											Escribir "No hay solicitudes registradas"
+										FinSi
+									2:	
+										Escribir "Volviendo al menu principal..."
+										Esperar 1.2 segundos
+								FinSegun
 							FinSi
 						SiNo
 							Escribir "No se pueden registrar mas solicitudes. El límite diario es 10 solicitudes."
 						FinSi
 						
-						Esperar 5 Segundos
+						Esperar 1 Segundos
 						Limpiar Pantalla
-					2:
+					2:si cantSolicitudes>0 Entonces	
+						Limpiar Pantalla
+						mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio)
+					SiNo
+						Limpiar Pantalla
+						Escribir "No hay solicitudes registradas"
+						Escribir ""
+						Escribir "Presione una tecla para volver al menu..."
+						Esperar Tecla
+						Limpiar Pantalla
+						
+					FinSi
 					3:
 					4:
 					5:
@@ -397,12 +429,16 @@ FinFuncion
 SubAlgoritmo mostrarSolicitudConfirmada (solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
 	Si solicitudConfirmada = Falso Entonces
 		Escribir "La solicitud fue cancelada";
-		Escribir "Cantidad de Solicitudes canceladas: ", cantCanceladas; 
+		Escribir ""
+		Escribir "Presione una tecla para volver al menu..."
+		Esperar Tecla
+		Limpiar Pantalla
 	SiNo
 		Escribir "Solicitud confirmada. Aguarde la asignacion.";
-		Escribir "Ubicacion guardada: ", solicitudUbicaciones[cantSolicitudes - 1];
-		Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[cantSolicitudes - 1];
-		Escribir "Patente: ", patentes[cantSolicitudes-1]
+		Esperar 2.5 Segundos
+		Escribir "Estamos buscando la mejor coincidencia para tu solicitud..."
+		Esperar 2.5 segundos
+		Limpiar Pantalla
 	FinSi
 	
 FinSubAlgoritmo
@@ -425,14 +461,54 @@ Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,loc
 	FinPara
 FinFuncion
 
-SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes)
+SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes, estadosSolicitudes Por Referencia, estadosServicio)
 	Si choferEncontrado <> -1
-		Escribir "Se encontro un chofer en la zona"
-		Escribir "Se le asignó el chofer : ",nombresChoferes[choferEncontrado];
 		choferesAsignados[cantSolicitudes-1]=choferEncontrado;
 		estadosChoferes[choferEncontrado]= "Ocupado"
+		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[1]
+		Escribir "Solicitud confirmada."
+		Escribir "Estado: ", estadosServicio[1]
 	SiNo
-		Escribir "No hay choferes disponibles en la zona, por favor aguarde"
+		Escribir "Solicitud confirmada."
+		Escribir "Su solicitud quedó pendiente de asignación"
+		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[0]
 	FinSi
+FinSubAlgoritmo
+
+Funcion opcionPost <- opcionPostSolicitud
+	Definir opcionPost Como Entero
+	Repetir
+		Escribir ""
+		Escribir "1. Consultar detalles del servicio"
+		Escribir "2. Volver al menu principal"
+		Leer opcionPost
+		
+		si opcionPost < 1 o opcionPost > 2 Entonces
+		Limpiar Pantalla
+		Escribir "Por favor, ingrese una opción correcta: "
+	FinSi
+	Hasta Que opcionPost >= 1 y opcionPost <=2 
+FinFuncion
+
+SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicios)
+	Escribir "--------------------------------------";
+	Escribir "       Detalles del servicio          ";
+	Escribir "--------------------------------------"
+	Escribir "";
+	Escribir "Patente: ", patentes[cantSolicitudes-1];
+	Escribir "Ubicacion: ", solicitudUbicaciones[cantSolicitudes-1];
+	Escribir "Vehiculo: ", solicitudTipoVehiculos[cantSolicitudes-1];
+	Escribir "Situacion: ",solicitudSituaciones[cantSolicitudes-1];
+	Escribir "Estado: ", estadosSolicitudes[cantSolicitudes-1];
+	
+	si estadosSolicitudes[cantSolicitudes-1]= estadosServicios[0] Entonces
+		Escribir  "Chofer: Aun no asignado" 
+	SiNo
+		Escribir "Chofer: ", nombresChoferes[choferesAsignados[cantSolicitudes-1]]
+	FinSi
+	
+	Escribir "Presione una tecla para volver al menu..."
+	Esperar Tecla
+	Limpiar Pantalla
 FinSubAlgoritmo
 	
