@@ -7,11 +7,11 @@ Algoritmo SIGAM
 	//Variables generales
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
-	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost Como Entero;
+	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes,estadosDisponibles,estadosServicio,estadosSolicitudes  Como Caracter
-	
+
 	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
@@ -95,7 +95,7 @@ Algoritmo SIGAM
 			Escribir "=========================================="
 			
 			inicioSesion(usuario, password);
-			valorUsuario <- validaLogin (usuario, password)
+			valorUsuario <- validaLogin (usuario, password,choferLogueado)
 			
 			si valorUsuario == "Incorrecto" Entonces
 				Escribir "Usuario o contraseña incorrecta. Por favor, intente nuevamente."
@@ -119,13 +119,29 @@ Algoritmo SIGAM
 					Segun opcionUsuario Hacer
 						1:
 						2:
-						3:
+							si cantSolicitudes=0 Entonces
+								Limpiar Pantalla
+								Escribir "Aun no tiene servicio asignado"
+								Escribir ""
+								Escribir "Presione una tecla para volver al menu..." 
+								Esperar Tecla
+								Limpiar Pantalla
+							sino 
+								mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogueado,patentes,solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,estadosSolicitudes)
+								opcionChofer <- opcionServicioChofer
+								Segun opcionChofer Hacer
+									1:iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio)
+									2:
+										Escribir "Volviendo al menu principal..."
+										Esperar 1.2 segundos
+										Limpiar Pantalla
+								FinSegun
+							FinSi
+						3:	
+							finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles)
 						4:
 						5:
-						6:
-						7: 
-						8:
-						9: loginActivo <- Falso	
+						6: loginActivo <- Falso	
 						De Otro Modo:
 							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
 							Esperar 1.5 Segundos
@@ -227,14 +243,11 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "";
 	Escribir "1) Ver estado actual";
-	Escribir "2) Cambiar estado";
-	Escribir "3) Ver informacion de mi grúa";
-	Escribir "4) Ver servicio asignado";
-	Escribir "5) Iniciar viaje";
-	Escribir "6) Reportar incidencia";
-	Escribir "7) Finalizar viaje";
-	Escribir "8) Ver historial de ganancias";
-	Escribir "9) Cerrar sesión";
+	Escribir "2) Ver servicio asignado";
+	Escribir "3) Finalizar viaje";
+	Escribir "4) Reportar incidencia";
+	Escribir "5) Ver historial de ganancias";
+	Escribir "6) Cerrar sesión";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opción: ";
 	Leer opcionUsuario;
@@ -295,9 +308,9 @@ SubAlgoritmo  inicioSesion(user Por Referencia, pasw Por Referencia)
 FinSubAlgoritmo
 
 //Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
-Funcion tipoUsuario <- validaLogin (usu, psw) 
+Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia) 
 	
-	Definir chofer1, claveChofer1 Como Caracter; 	     // Variables Chofer
+	Definir chofer1, claveChofer1,chofer2, claveChofer2,chofer3, claveChofer3 Como Caracter; 	     // Variables Chofer
 	Definir cliente1, claveCliente1 Como Caracter;    // Variables Cliente 
 	Definir admin1, claveAdmin1 Como Caracter;       // Variables Administrador
 	Definir soporte1, claveSoporte1 Como Caracter   // Variables Soporte	
@@ -306,6 +319,12 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	//Credenciales hardcodeadas de los diferentes usuarios
 	chofer1 = "chofer1";
 	claveChofer1= "chofer123";
+	
+	chofer2 = "chofer2";
+	claveChofer2= "chofer123";
+	
+	chofer3 = "chofer3";
+	claveChofer3= "chofer123";
 	
 	cliente1 = "cliente1";
 	claveCliente1 = "cliente123";
@@ -320,20 +339,36 @@ Funcion tipoUsuario <- validaLogin (usu, psw)
 	
 	Si usu == chofer1 y psw == claveChofer1 Entonces
 		tipoUsuario = "Chofer"
+		choferLogueado=0
 	SiNo
-		si usu == cliente1 y psw == claveCliente1 Entonces
-			tipoUsuario = "Cliente"
-		SiNo 
-			si usu == admin1 y psw == claveAdmin1 Entonces
-				tipoUsuario = "Admin"
-			SiNo 
-				si usu == soporte1 y psw == claveSoporte1 Entonces
-					tipoUsuario = "Soporte"
+		si usu == chofer2 y psw == claveChofer2 Entonces
+			tipoUsuario = "Chofer"
+			choferLogueado=1
+		SiNo
+			si usu == chofer3 y psw == claveChofer3 Entonces
+				tipoUsuario = "Chofer"
+				choferLogueado=2
+			SiNo
+				si usu == cliente1 y psw == claveCliente1 Entonces
+					tipoUsuario = "Cliente"
+				SiNo 
+					si usu == admin1 y psw == claveAdmin1 Entonces
+					tipoUsuario = "Admin"
+					SiNo 
+						si usu == soporte1 y psw == claveSoporte1 Entonces
+							tipoUsuario = "Soporte"
+						FinSi
+					FinSi
 				FinSi
 			FinSi
 		FinSi
 	FinSi
+	
 FinFuncion
+
+//------------------------------------------------------------------------------
+//------------------------FUNCIONES DEL CLIENTE --------------------------------
+//------------------------------------------------------------------------------
 
 Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
 	Definir confirmar como entero; 
@@ -472,6 +507,8 @@ SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignado
 		Escribir "Solicitud confirmada."
 		Escribir "Su solicitud quedó pendiente de asignación"
 		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[0]
+		choferesAsignados[cantSolicitudes-1]=-1
+		
 	FinSi
 FinSubAlgoritmo
 
@@ -511,4 +548,82 @@ SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehic
 	Esperar Tecla
 	Limpiar Pantalla
 FinSubAlgoritmo
-	
+
+//------------------------------------------------------------------------------
+//------------------------FUNCIONES DEL CHOFER ---------------------------------
+//------------------------------------------------------------------------------
+
+
+SubAlgoritmo mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogueado,patentes,solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,estadosSolicitudes)
+	Limpiar Pantalla
+	Escribir "--------------------------------------";
+	Escribir "       Detalles del servicio          ";
+	Escribir "--------------------------------------"
+	Escribir "";
+	Definir i como entero
+	Definir hayServicio como logico
+	hayServicio = Falso
+	para i = 0 hasta cantSolicitudes-1 Hacer
+		si choferesAsignados[i] == choferLogueado Entonces
+			hayServicio=Verdadero
+			Escribir "Patente: ",patentes[i]
+			Escribir "Ubicacion: ",solicitudUbicaciones[i]
+			Escribir "Tipo de vehiculo: ", solicitudTipoVehiculos[i]
+			Escribir "Situacion: " ,solicitudSituaciones[i]
+			Escribir "Estado: ",estadosSolicitudes[i]
+		FinSi
+	FinPara
+	si hayServicio=Falso Entonces
+		Escribir "Aun no tiene servicio asignado"
+	FinSi
+FinSubAlgoritmo
+
+Funcion opcionChofer <- opcionServicioChofer
+	Definir opcionChofer Como Entero
+	Repetir
+		Escribir ""
+		Escribir "1. Iniciar viaje"
+		Escribir "2. Volver al menu principal"
+		Leer opcionChofer
+		
+		si opcionChofer < 1 o opcionChofer > 2 Entonces
+			Limpiar Pantalla
+			Escribir "Por favor, ingrese una opción correcta: "
+		FinSi
+	Hasta Que opcionChofer >= 1 y opcionChofer <=2 
+FinFuncion
+
+SubAlgoritmo iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes Por Referencia,estadosServicio)
+	Definir i Como Entero
+	para i = 0 hasta cantSolicitudes-1 Hacer
+		si choferesAsignados[i] == choferLogueado Entonces
+			estadosSolicitudes[i] = estadosServicio[2]
+		FinSi
+	FinPara
+FinSubAlgoritmo
+
+SubAlgoritmo finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes Por Referencia,estadosServicio,estadosChoferes Por Referencia,estadosDisponibles)
+	Definir i Como Entero
+	para i = 0 hasta cantSolicitudes-1 Hacer
+		si choferesAsignados[i] == choferLogueado Entonces
+			si estadosSolicitudes[i] = estadosServicio[2]
+				estadosSolicitudes[i] = estadosServicio[3]
+				estadosChoferes[choferLogueado]= estadosDisponibles[0]
+				Limpiar Pantalla
+				Escribir "Viaje finalizado"
+				Escribir "Presione una tecla para volver al menu..."
+				Esperar Tecla
+				Limpiar Pantalla
+			SiNo
+				Limpiar Pantalla
+                Escribir "El viaje aun no fue iniciado."
+                Escribir "Presione una tecla para volver al menu..."
+                Esperar Tecla
+                Limpiar Pantalla
+            FinSi
+			
+		FinSi
+	FinPara
+FinSubAlgoritmo
+
+
