@@ -1,8 +1,8 @@
 SubAlgoritmo mostrarBienvenida
 	Escribir "===================================================="
-	Escribir "               �BIENVENIDO/A A SIGAM!               "
+	Escribir "               ?BIENVENIDO/A A SIGAM!               "
 	Escribir "===================================================="
-	Escribir "Sistema de Gesti�n y Asignaci�n de Auxilio Mecanico "
+	Escribir "Sistema de Gesti?n y Asignaci?n de Auxilio Mecanico "
 	Escribir "...................................................."
 FinSubAlgoritmo
 
@@ -54,22 +54,22 @@ Algoritmo SIGAM
 			// Mensaje de bienvenida
 			mostrarBienvenida;
 			
-			// Inicio de sesi�n
+			// Inicio de sesi?n
 			inicioSesion(usuario, password);
 			valorUsuario <- validaLogin (usuario, password,choferLogueado)
 			
-			// Validaci�n para credenciales incorrectas en login
+			// Validaci?n para credenciales incorrectas en login
 			si valorUsuario == "Incorrecto" Entonces
-				Escribir "Usuario o contrase�a incorrecta. Por favor, intente nuevamente."
+				Escribir "Usuario o contrase?a incorrecta. Por favor, intente nuevamente."
 				Esperar 2.0 Segundos
 				Limpiar Pantalla
 			FinSi
 		FinMientras
 		
-		// Al iniciar sesi�n, limpiar� la pantalla de la consola para mostrar correctamente los men�s
+		// Al iniciar sesi?n, limpiar? la pantalla de la consola para mostrar correctamente los men?s
 		Limpiar Pantalla;
 		
-		// Mientras login sea verdadero realizar� todas las acciones dentro del mientras..
+		// Mientras login sea verdadero realizar? todas las acciones dentro del mientras..
 		loginActivo <- Verdadero;
 		
 		Mientras loginActivo Hacer
@@ -132,7 +132,7 @@ Algoritmo SIGAM
 								FinSegun
 							FinSi
 						SiNo
-							Escribir "No se pueden registrar mas solicitudes. El l�mite diario es 10 solicitudes."
+							Escribir "No se pueden registrar mas solicitudes. El l?mite diario es 10 solicitudes."
 						FinSi
 						
 						Esperar 1 Segundos
@@ -154,7 +154,7 @@ Algoritmo SIGAM
 					5:
 					6:loginActivo <- Falso
 					De Otro Modo:
-						Escribir "La opci�n ingresada no es valida. Por favor, intente nuevamente"
+						Escribir "La opci?n ingresada no es valida. Por favor, intente nuevamente"
 						Esperar 2.5 Segundos 
 						Limpiar Pantalla
 					FinSegun
@@ -207,9 +207,9 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "3) Finalizar viaje";
 	Escribir "4) Reportar incidencia";
 	Escribir "5) Ver historial de ganancias";
-	Escribir "6) Cerrar sesi�n";
+	Escribir "6) Cerrar sesi?n";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opci�n: ";
+	Escribir Sin Saltar "Ingrese una opci?n: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
@@ -223,9 +223,9 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "3) Reportar incidencia";
 	Escribir "4) Calificar servicio";
 	Escribir "5) Ver historial";
-	Escribir "6) Cerrar sesi�n";
+	Escribir "6) Cerrar sesi?n";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opci�n: ";
+	Escribir Sin Saltar "Ingrese una opci?n: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
@@ -235,13 +235,13 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "";
 	Escribir "1) Gestionar choferes";
-	Escribir "2) Gestionar gr�as";
+	Escribir "2) Gestionar gr?as";
 	Escribir "3) Gestionar localidades";
 	Escribir "4) Configurar distancias";
-	Escribir "5) Consultar estad�sticas";
-	Escribir "6) Cerrar sesi�n";
+	Escribir "5) Consultar estad?sticas";
+	Escribir "6) Cerrar sesi?n";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opci�n: ";
+	Escribir Sin Saltar "Ingrese una opci?n: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
@@ -253,17 +253,17 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "1) Ver incidencias pendientes";
 	Escribir "2) Gestionar incidencia";
 	Escribir "3) Ver historial de incidencias";
-	Escribir "4) Cerrar sesi�n";
+	Escribir "4) Cerrar sesi?n";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opci�n: ";
+	Escribir Sin Saltar "Ingrese una opci?n: ";
 	Leer opcionUsuario;
 FinSubAlgoritmo
 
-//Inicio de sesi�n
+//Inicio de sesi?n
 SubAlgoritmo  inicioSesion(user Por Referencia, pasw Por Referencia)
 	Escribir "Ingrese su usuario:";
 	leer user
-	Escribir "Ingrese su contrase�a:";
+	Escribir "Ingrese su contrase?a:";
 	Leer pasw
 FinSubAlgoritmo
 
@@ -316,8 +316,9 @@ SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignado
 		Escribir "Estado: ", estadosServicio[1]
 	SiNo
 		Escribir "Solicitud confirmada."
-		Escribir "Su solicitud qued� pendiente de asignaci�n"
+		Escribir "Su solicitud qued? pendiente de asignaci?n"
 		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[0]
+		choferesAsignados[cantSolicitudes-1]=-1
 	FinSi
 FinSubAlgoritmo
 
@@ -327,7 +328,7 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	ubicaciones[1] <- "Ituzaingo"
 	ubicaciones[2] <- "Moron"
 	
-	// Tipos de Veh�culos
+	// Tipos de Veh?culos
 	tipoVehiculos[0] <- "Moto"
 	tipoVehiculos[1] <- "Auto"
 	tipoVehiculos[2] <- "Camioneta"
@@ -388,7 +389,7 @@ Funcion opcionPost <- opcionPostSolicitud
 		
 		si opcionPost < 1 o opcionPost > 2 Entonces
 		Limpiar Pantalla
-		Escribir "Por favor, ingrese una opci�n correcta: "
+		Escribir "Por favor, ingrese una opci?n correcta: "
 	FinSi
 	Hasta Que opcionPost >= 1 y opcionPost <=2 
 FinFuncion
@@ -412,7 +413,7 @@ Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,loc
 		FinSi
 	FinPara
 FinFuncion
-//Funci�n que valida el acceso de las credenciales hardcodeadas y devuelve el valor del men�
+//Funci?n que valida el acceso de las credenciales hardcodeadas y devuelve el valor del men?
 Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia) 
 	
 	Definir chofer1, claveChofer1,chofer2, claveChofer2,chofer3, claveChofer3 Como Caracter; 	     // Variables Chofer
@@ -489,14 +490,14 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Escribir "---------------------------------------------------------------";
 	
 	Repetir
-		Escribir "Seleccione la ubicaci�n: ";
+		Escribir "Seleccione la ubicaci?n: ";
 		Escribir "1. Merlo"
 		Escribir "2. Ituzaingo"
 		Escribir "3. Moron"
 		leer opcionUbicaciones;
 		si opcionUbicaciones < 1 o opcionUbicaciones > 3 Entonces
 			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opci�n correcta: "
+			Escribir "Por favor, ingrese una opci?n correcta: "
 		FinSi
 	Hasta Que opcionUbicaciones >= 1 y opcionUbicaciones <= 3
 	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
@@ -510,7 +511,7 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 		leer opcionVehiculos;
 		si opcionVehiculos < 1 o opcionVehiculos > 3 Entonces
 			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opci�n correcta: "
+			Escribir "Por favor, ingrese una opci?n correcta: "
 		FinSi
 	Hasta Que opcionVehiculos >= 1 y opcionVehiculos <= 3 
 	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
@@ -524,7 +525,7 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 		Leer opcionSituaciones;
 		si opcionSituaciones < 1 o opcionSituaciones > 3 Entonces
 			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opci�n correcta: "
+			Escribir "Por favor, ingrese una opci?n correcta: "
 		FinSi
 	Hasta Que opcionSituaciones >= 1 y opcionSituaciones <= 3 
 	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
@@ -543,14 +544,14 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Escribir "Patente: ", patentes[cantsolicitudes]
 	Escribir "";
 	Escribir "..............................................................";
-	Escribir " Para avanzar con su solicitud, seleccione la opci�n deseada.  ";
+	Escribir " Para avanzar con su solicitud, seleccione la opci?n deseada.  ";
 	Escribir "..............................................................";
 	Escribir "1. Confirmar solicitud"
 	Escribir "2. Cancelar solicitud"
 	Leer confirmar;
 	
 	Mientras  confirmar <> 1 y confirmar <> 2 Hacer
-		Escribir "Por favor, ingrese una opci�n correcta: ";
+		Escribir "Por favor, ingrese una opci?n correcta: ";
 		Leer confirmar;
 	FinMientras
 	
@@ -565,94 +566,6 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Limpiar Pantalla
 FinFuncion
 
-
-SubAlgoritmo mostrarSolicitudConfirmada (solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
-	Si solicitudConfirmada = Falso Entonces
-		Escribir "La solicitud fue cancelada";
-		Escribir ""
-		Escribir "Presione una tecla para volver al menu..."
-		Esperar Tecla
-		Limpiar Pantalla
-	SiNo
-		Escribir "Solicitud confirmada. Aguarde la asignacion.";
-		Esperar 2.5 Segundos
-		Escribir "Estamos buscando la mejor coincidencia para tu solicitud..."
-		Esperar 2.5 segundos
-		Limpiar Pantalla
-	FinSi
-	
-FinSubAlgoritmo
-
-
-//Motor de busqueda en etapa beta, actualmente solo pregunta por la disponibiliada de los choferes y compara las zonas
-Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes Por Referencia)
-	Definir buscaChofer como entero
-	definir i Como Entero
-	buscaChofer = -1
-	Para i=0 hasta 2 con paso 1 Hacer
-		si buscaChofer = -1 Entonces
-			si estadosChoferes[i]= "Disponible"
-				si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
-					buscaChofer = i;
-				//	estadosChoferes[i]= "Ocupado"
-				FinSi
-			FinSi
-		FinSi
-	FinPara
-FinFuncion
-
-SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes, estadosSolicitudes Por Referencia, estadosServicio)
-	Si choferEncontrado <> -1
-		choferesAsignados[cantSolicitudes-1]=choferEncontrado;
-		estadosChoferes[choferEncontrado]= "Ocupado"
-		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[1]
-		Escribir "Solicitud confirmada."
-		Escribir "Estado: ", estadosServicio[1]
-	SiNo
-		Escribir "Solicitud confirmada."
-		Escribir "Su solicitud qued� pendiente de asignaci�n"
-		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[0]
-		choferesAsignados[cantSolicitudes-1]=-1
-		
-	FinSi
-FinSubAlgoritmo
-
-Funcion opcionPost <- opcionPostSolicitud
-	Definir opcionPost Como Entero
-	Repetir
-		Escribir ""
-		Escribir "1. Consultar detalles del servicio"
-		Escribir "2. Volver al menu principal"
-		Leer opcionPost
-		
-		si opcionPost < 1 o opcionPost > 2 Entonces
-		Limpiar Pantalla
-		Escribir "Por favor, ingrese una opci�n correcta: "
-	FinSi
-	Hasta Que opcionPost >= 1 y opcionPost <=2 
-FinFuncion
-
-SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicios)
-	Escribir "--------------------------------------";
-	Escribir "       Detalles del servicio          ";
-	Escribir "--------------------------------------"
-	Escribir "";
-	Escribir "Patente: ", patentes[cantSolicitudes-1];
-	Escribir "Ubicacion: ", solicitudUbicaciones[cantSolicitudes-1];
-	Escribir "Vehiculo: ", solicitudTipoVehiculos[cantSolicitudes-1];
-	Escribir "Situacion: ",solicitudSituaciones[cantSolicitudes-1];
-	Escribir "Estado: ", estadosSolicitudes[cantSolicitudes-1];
-	
-	si estadosSolicitudes[cantSolicitudes-1]= estadosServicios[0] Entonces
-		Escribir  "Chofer: Aun no asignado" 
-	SiNo
-		Escribir "Chofer: ", nombresChoferes[choferesAsignados[cantSolicitudes-1]]
-	FinSi
-	
-	Escribir "Presione una tecla para volver al menu..."
-	Esperar Tecla
-	Limpiar Pantalla
-FinSubAlgoritmo
 
 //------------------------------------------------------------------------------
 //------------------------FUNCIONES DEL CHOFER ---------------------------------
@@ -693,7 +606,7 @@ Funcion opcionChofer <- opcionServicioChofer
 		
 		si opcionChofer < 1 o opcionChofer > 2 Entonces
 			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opci�n correcta: "
+			Escribir "Por favor, ingrese una opci?n correcta: "
 		FinSi
 	Hasta Que opcionChofer >= 1 y opcionChofer <=2 
 FinFuncion
