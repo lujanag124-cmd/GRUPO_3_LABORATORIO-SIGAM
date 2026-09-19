@@ -13,7 +13,6 @@ Algoritmo SIGAM
 	//Variables generales
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
-	//Definir usuarios, claves, roles Como Caracter;
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter
 	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
@@ -683,11 +682,11 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Limpiar Pantalla
 FinFuncion
 
-//------------------------------------------------------------------------------
-//------------------------FUNCIONES DEL CHOFER ---------------------------------
-//------------------------------------------------------------------------------
+// .......................................
+//         FUNCIONES DEL CLIENTE 
+// .......................................
 
-// Sub-menu que visualizara el chofer en la opción "
+// Sub-menu 
 Funcion opcionChofer <- opcionServicioChofer
 	Definir opcionChofer Como Entero
 	Repetir
