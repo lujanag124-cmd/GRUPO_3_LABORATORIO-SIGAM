@@ -5,7 +5,7 @@ Algoritmo SIGAM
 	//Variables generales
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
-	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter
+	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter;
 	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
@@ -21,7 +21,7 @@ Algoritmo SIGAM
 	Dimension tipoVehiculos[3];
 	Dimension situaciones[3];
 	Dimension estadosSolicitudes[10];
-	Dimension nombresChoferes[3];
+	Dimension nombresChoferes[3];	
 	Dimension usuariosChoferes[3];
 	Dimension clavesChoferes[3];
 	Dimension estadosChoferes[3];
@@ -70,31 +70,32 @@ Algoritmo SIGAM
 				"Chofer" :
 					menuChofer(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1: 
-							estadoActualChofer(choferLogueado, estadosChoferes, estadosDisponibles)
-						2:
-							si cantSolicitudes=0 Entonces
-								Limpiar Pantalla
-								Escribir "Aun no tiene servicio asignado"
-								Escribir ""
-								Escribir "Presione una tecla para volver al menu..." 
-								Esperar Tecla
-								Limpiar Pantalla
-							sino 
-								mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogueado,patentes,solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,estadosSolicitudes)
-								opcionChofer <- opcionServicioChofer
-								Segun opcionChofer Hacer
-									1:iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio)
-									2:
-										Escribir "Volviendo al menu principal..."
-										Esperar 2.0 segundos
-										Limpiar Pantalla
-								FinSegun
-							FinSi
-						3:	
-							finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles)
-						4:
-						5:
+						1:estadoActualChofer(choferLogueado, estadosChoferes, estadosDisponibles)
+						2:si cantSolicitudes=0 Entonces
+							Limpiar Pantalla
+							Escribir "Aun no tiene servicio asignado"
+							Escribir ""
+							Escribir "Presione una tecla para volver al menu..." 
+							Esperar Tecla
+							Limpiar Pantalla
+						sino 
+							mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogueado,patentes,solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,estadosSolicitudes)
+							opcionChofer <- opcionServicioChofer
+							Segun opcionChofer Hacer
+								1:iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio)
+								2:
+									Escribir "Volviendo al menu principal..."
+									Esperar 2.0 segundos
+									Limpiar Pantalla
+							FinSegun
+						FinSi
+						3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles)
+						4:contactarSoporte
+						5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
+							Escribir " "
+							Escribir "Presione una tecla para volver al menu..."
+							Esperar Tecla
+							Limpiar Pantalla
 						6: loginActivo <- Falso	
 						De Otro Modo:
 							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
@@ -143,9 +144,17 @@ Algoritmo SIGAM
 						Limpiar Pantalla
 						
 					FinSi
-					3:
-					4:
-					5:
+					3:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
+						Escribir " "
+						Escribir "Presione una tecla para volver al menu..."
+						Esperar Tecla
+						Limpiar Pantalla
+					4:contactarSoporte
+					5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
+						Escribir " "
+						Escribir "Presione una tecla para volver al menu..."
+						Esperar Tecla
+						Limpiar Pantalla
 					6:loginActivo <- Falso
 					De Otro Modo:
 						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
@@ -258,16 +267,16 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Cliente               "
 	Escribir "=========================================="
-	Escribir "";
 	Escribir "1) Solicitar auxilio";
-	Escribir "2) Consultar estado del servicio";
-	Escribir "3) Contactar a soporte";
-	Escribir "4) Calificar servicio";
+	Escribir "2) Consultar estado del viaje";
+	Escribir "3) Calificar servicio";
+	Escribir "4) Contactar a soporte";
 	Escribir "5) Ver historial";
 	Escribir "6) Cerrar sesion";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
+	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menu chofer
@@ -275,7 +284,6 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Chofer                "
 	Escribir "=========================================="
-	Escribir "";
 	Escribir "1) Estado actual";
 	Escribir "2) Servicio asignado";
 	Escribir "3) Finalizar viaje";
@@ -285,6 +293,7 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
+	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menu Administrador
@@ -293,7 +302,6 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "            Menu Administrador            "
 	Escribir "=========================================="
-	Escribir "";
 	Escribir "1) Gestionar choferes";
 	Escribir "2) Gestionar gruas";
 	Escribir "3) Gestionar localidades";
@@ -303,6 +311,7 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
+	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menú Soporte
@@ -310,7 +319,6 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Soporte               "
 	Escribir "=========================================="
-	Escribir "";
 	Escribir "1) Ver incidencias pendientes";
 	Escribir "2) Gestionar incidencia";
 	Escribir "3) Ver historial de incidencias";
@@ -318,12 +326,12 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
+	Limpiar Pantalla
 FinSubAlgoritmo
 
 
-
 // ..............................................................................................
-//                                 Proceso para solicitud de auxilio
+//                                 INICIO para solicitud de auxilio
 // ..............................................................................................
 
 // Informacion hardcodeada, relevante para el proceso 
@@ -355,7 +363,6 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	estadosChoferes[1] <- "Ocupado"
 	estadosChoferes[2] <- "Disponible"
 	
-	
 	// Localicades
 	localidadesChoferes[0] <- "Ituzaingo"
 	localidadesChoferes[1] <- "Moron"
@@ -375,6 +382,14 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	
 FinSubAlgoritmo
 
+// Mensaje para solicitud de auxilio
+SubAlgoritmo mostrarSolicitudAuxilio
+	Escribir "==============================================================="
+	Escribir "                     Solicitar auxilio                         "
+	Escribir "==============================================================="
+	Escribir " Por favor, seleccione y complete las opciones de la solicitud."
+	Escribir "---------------------------------------------------------------"	
+FinSubAlgoritmo
 
 // Funcion para solicitud de auxilio
 Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
@@ -383,59 +398,76 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Definir opcionUbicaciones Como Entero
 	Definir opcionSituaciones Como Entero
 	Definir opcionVehiculos Como Entero
-	Limpiar Pantalla;
-	Escribir "==============================================================="
-	Escribir "                     Solicitar auxilio                         "
-	Escribir "==============================================================="
-	Escribir " Por favor, seleccione y complete las opciones de la solicitud.";
-	Escribir "---------------------------------------------------------------";
 	
 	Repetir
+		mostrarSolicitudAuxilio;
 		Escribir "Seleccione la ubicacion: ";
 		Escribir "1. Merlo"
 		Escribir "2. Ituzaingo"
 		Escribir "3. Moron"
 		leer opcionUbicaciones;
+		Limpiar Pantalla
+		
 		si opcionUbicaciones < 1 o opcionUbicaciones > 3 Entonces
-			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opcion correcta: "
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla 
 		FinSi
+		
 	Hasta Que opcionUbicaciones >= 1 y opcionUbicaciones <= 3
 	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
 	
 	Repetir
-		Escribir " ";
+		mostrarSolicitudAuxilio;
 		Escribir "Seleccione el tipo de vehiculo: ";
 		Escribir "1. Moto"
 		Escribir "2. Auto"
 		Escribir "3. Camioneta"
 		leer opcionVehiculos;
-		si opcionVehiculos < 1 o opcionVehiculos > 3 Entonces
-			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opcion correcta: "
+		Limpiar Pantalla
+		
+		Si opcionVehiculos < 1 o opcionVehiculos > 3 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla 
 		FinSi
+		
 	Hasta Que opcionVehiculos >= 1 y opcionVehiculos <= 3 
 	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
 	
 	Repetir
-		Escribir " ";
+		mostrarSolicitudAuxilio;
 		Escribir "Seleccione la situacion: ";
 		Escribir "1. Pinchadura"
 		Escribir "2. Falla mecanica"
 		Escribir "3. Accidente/Choque"
 		Leer opcionSituaciones;
+		Limpiar Pantalla
+		
 		si opcionSituaciones < 1 o opcionSituaciones > 3 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
 			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opcion correcta: "
 		FinSi
 	Hasta Que opcionSituaciones >= 1 y opcionSituaciones <= 3 
 	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
 	
-	Escribir " ";
-	Escribir "Ingrese su patente: ";
-	Leer patentes[cantSolicitudes]
 	
-	Limpiar Pantalla
+	// Patente con validación 
+    Repetir
+		mostrarSolicitudAuxilio;
+        Escribir "Ingrese su patente (ej: abc123): ";
+        Leer patentes[cantSolicitudes]
+		Limpiar Pantalla
+        
+        Si NO validarPatente(patentes[cantSolicitudes]) Entonces
+            Escribir "Patente incorrecta. Debe contener 3 letras seguidas de 3 números (ej: abc123)."
+            Esperar 3.5 Segundos
+			Limpiar Pantalla
+        FinSi
+    Hasta Que validarPatente(patentes[cantSolicitudes])
+    
+//	Limpiar Pantalla
 	Escribir "--------------------------------------";
 	Escribir "     Los datos seleccionados son:     ";
 	Escribir "--------------------------------------";
@@ -457,14 +489,47 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	FinMientras
 	
 	si confirmar = 1 Entonces
-		confirmada=Verdadero;
+		confirmada = Verdadero;
 		cantSolicitudes=cantSolicitudes+1
 		
 	SiNo
-		confirmada=Falso; 
-		cantCanceladas=cantCanceladas+1;
+		confirmada = Falso; 
+		cantCanceladas = cantCanceladas+1;
 	FinSi
 	Limpiar Pantalla
+FinFuncion
+
+// Validación para el ingreso de PATENTE
+Funcion esValida <- validarPatente(patente)
+    Definir esValida Como Logico
+    Definir i Como Entero
+    Definir letra, num Como Caracter
+    
+    esValida <- Verdadero
+    
+    // valida que el usuario haya ingresado exactamente 6 caracteres
+    Si Longitud(patente) <> 6 Entonces
+        esValida <- Falso
+    SiNo
+        // Si el usuario ingresa mayusculas, lo pasa a minusculas para que no lo tome como patente incorrecta por la sig validación
+        patente <- Minusculas(patente)
+        
+        // valida que el usuario haya ingresado 3 letras (entre a y z)
+        Para i <- 0 Hasta 2 Hacer  // recorre las 3 primeras posiciones
+            letra <- Subcadena(patente, i, i)
+            Si letra < "a" O letra > "z" Entonces
+                esValida <- Falso
+            FinSi
+        FinPara
+        
+        // valida que el usuario haya ingresado 3 numeros (entre 0 y 9)
+        Para i <- 3 Hasta 5 Hacer // recorre las 3 ultimas posiciones
+            num <- Subcadena(patente, i, i)
+            Si num < "0" O num > "9" Entonces
+                esValida <- Falso
+            FinSi
+        FinPara
+    FinSi
 FinFuncion
 
 // Mensajes de confirmación o cancelación de solicitud
@@ -524,7 +589,7 @@ Funcion opcionPost <- opcionPostSolicitud
 	Definir opcionPost Como Entero
 	Repetir
 		Escribir ""
-		Escribir "1. Consultar detalles del servicio"
+		Escribir "1. Consultar detalle del viaje"
 		Escribir "2. Volver al menu principal"
 		Leer opcionPost
 		
@@ -631,10 +696,71 @@ SubAlgoritmo finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,est
         Limpiar Pantalla
     FinSi
 FinSubAlgoritmo
- 
+
+// ..............................................................................................
+//                                 FIN para el proceso de solicitudes de auxilio
+// ..............................................................................................
+
 
 // ......................................................................................
-//                                FUNCIONES DEL CHOFER 
+//                  CHOFER Y CLIENTE >> MENÚ - OPCION 4: Contactar a soporte
+// ......................................................................................
+
+SubAlgoritmo contactarSoporte
+    Definir mensaje Como Caracter
+    Definir limiteCaracteres Como Entero
+    limiteCaracteres <- 20 // solo de prueba, se cambia al que querramos
+    
+    Repetir
+        Limpiar Pantalla
+        Escribir "=========================================================================================="
+        Escribir "                              Contactar a Soporte                                         "
+        Escribir "=========================================================================================="
+        Escribir "Describa su consulta o inconveniente. (Maximo ", limiteCaracteres, " caracteres - Presione ENTER para enviar)"
+        Escribir ".........................................................................................."
+        
+        Escribir Sin Saltar "Mensaje: "
+        Leer mensaje;
+        
+        Si NO validarMensajeSoporte(mensaje, limiteCaracteres) Entonces
+            Escribir ""
+            Si Longitud(mensaje) < 5 Entonces   // cambiar longitud por el valor que querramos
+                Escribir "El mensaje es muy breve. Por favor, describa su problema con mayor detalle."
+            SiNo
+                Escribir "Supero el limite de ", limiteCaracteres, " caracteres (escribio ", Longitud(mensaje), ")."
+            FinSi
+            Esperar 3.0 Segundos
+        FinSi
+    Hasta Que validarMensajeSoporte(mensaje, limiteCaracteres)
+    
+    // Confirmación al enviarlo con éxito
+	Limpiar Pantalla
+    Escribir "----------------------------------------------------------------------------"
+    Escribir "¡Mensaje enviado con exito! Nuestra area de Soporte se contactara con usted."
+    Escribir "----------------------------------------------------------------------------"
+    Escribir "Presione una tecla para volver al menu..."
+    Esperar Tecla
+    Limpiar Pantalla
+FinSubAlgoritmo
+
+
+// Validación para que el usuario no supere el limite de caracteres ingresados
+Funcion esValido <- validarMensajeSoporte(mensaje, limite)
+    Definir esValido Como Logico
+    Definir limTexto Como Entero
+    
+    limTexto <- Longitud(mensaje)
+    
+    // Verifica que no esté vacío y no supere el límite
+    Si limTexto >= 5 Y limTexto <= limite Entonces  // cambiar limTexto por el valor que querramos
+        esValido <- Verdadero
+    SiNo
+        esValido <- Falso
+    FinSi
+FinFuncion
+
+// ......................................................................................
+//                         FUNCIONES y PROCESOS DEL USUARIO CHOFER 
 // ......................................................................................
  
 // MENU: 1) Estado actual
@@ -646,7 +772,7 @@ SubAlgoritmo estadoActualChofer(choferLogueado, estadosChoferes Por Referencia, 
         Escribir "---------------------------------------------------------"
         Escribir "                     Estado actual                       "
         Escribir "---------------------------------------------------------"
-        Escribir "Por default, el sistema le asignará estado no disponible."
+        Escribir "Por defecto, el sistema le asignará estado no disponible."
 		Escribir ".........................................................."
         Escribir ""
         
