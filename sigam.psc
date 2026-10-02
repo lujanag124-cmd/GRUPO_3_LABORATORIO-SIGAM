@@ -9,7 +9,7 @@ Algoritmo SIGAM
 	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
-	Definir cantSolicitudes, cantCanceladas Como Entero;
+	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad Como Entero;
 	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
@@ -29,6 +29,7 @@ Algoritmo SIGAM
 	Dimension localidadesChoferes[3];
 	Dimension estadosDisponibles[3];
 	Dimension estadosServicio[5];
+	Dimension puntajesPrioridad[10];
 	
 	//Datos hardcodeados para los vectores
 	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio)
@@ -106,7 +107,7 @@ Algoritmo SIGAM
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
 						1:si cantSolicitudes < 10 Entonces
-							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes)
+							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad)
 							
 							mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
 							
@@ -392,12 +393,13 @@ SubAlgoritmo mostrarSolicitudAuxilio
 FinSubAlgoritmo
 
 // Funcion para solicitud de auxilio
-Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia)
+Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia)
 	Definir confirmar como entero; 
 	Definir confirmada Como Logico
 	Definir opcionUbicaciones Como Entero
 	Definir opcionSituaciones Como Entero
 	Definir opcionVehiculos Como Entero
+	definir prioridad Como Entero
 	
 	Repetir
 		mostrarSolicitudAuxilio;
@@ -467,6 +469,10 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
         FinSi
     Hasta Que validarPatente(patentes[cantSolicitudes])
     
+	prioridad=calcularPrioridad
+	
+	puntajesPrioridad[cantSolicitudes]=prioridad
+	
 //	Limpiar Pantalla
 	Escribir "--------------------------------------";
 	Escribir "     Los datos seleccionados son:     ";
@@ -854,5 +860,105 @@ Funcion opcionChofer <- opcionServicioChofer
 FinFuncion
 
 
+funcion prioridad<- calcularPrioridad
+	definir opcionVia, opcionZonaPeligrosa, opcionObstruyeCirculacion, opcionTotalmenteDetenido, puntaje,prioridad Como Entero
+	puntaje =0;
+	
+	mostrarSolicitudAuxilio;
+	Repetir
+		Escribir "¿En que tipo de via se encuentra? ";
+		Escribir "1. Autopista"
+		Escribir "2. Ruta"
+		Escribir "3. Calle"
+		Leer opcionVia;
+		Limpiar Pantalla
+		
+		si opcionVia < 1 o opcionVia > 3 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla
+		FinSi
+		
+	Hasta Que opcionVia >= 1 y opcionVia <= 3
+	
+	segun opcionVia Hacer
+		1:puntaje=puntaje+3
+		2:puntaje=puntaje+1
+		3:puntaje=puntaje+0
+	FinSegun
+	
+	Repetir
+		mostrarSolicitudAuxilio;
+		Escribir "¿Se encuentra en una zona peligrosa? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Leer opcionZonaPeligrosa;
+		Limpiar Pantalla
+		
+		si opcionZonaPeligrosa < 1 o opcionZonaPeligrosa > 2 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla
+		FinSi
+		
+	Hasta Que opcionZonaPeligrosa >= 1 y opcionZonaPeligrosa <= 2
+	
+	si opcionZonaPeligrosa=1 Entonces
+		puntaje= puntaje+3
+	FinSi
+	
+	Repetir
+		mostrarSolicitudAuxilio;
+		Escribir "¿Se encuentra obstruyendo la circulacion? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Leer opcionObstruyeCirculacion;
+		Limpiar Pantalla
+		
+		si opcionObstruyeCirculacion < 1 o opcionObstruyeCirculacion > 2 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla
+		FinSi
+		
+	Hasta Que opcionObstruyeCirculacion >= 1 y opcionObstruyeCirculacion <= 2
+	
+	Si opcionObstruyeCirculacion=1 Entonces
+		puntaje= puntaje+2
+	FinSi
+	
+	Repetir
+		mostrarSolicitudAuxilio;
+		Escribir "¿Su vehiculo esta totalmente detenido? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Leer opcionTotalmenteDetenido;
+		Limpiar Pantalla
+		
+		si opcionTotalmenteDetenido < 1 o opcionTotalmenteDetenido > 2 Entonces
+			Escribir "Opción incorrecta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+			Limpiar Pantalla
+		FinSi
+		
+	Hasta Que opcionTotalmenteDetenido >= 1 y opcionTotalmenteDetenido <= 2
+	
+	Si opcionTotalmenteDetenido=1 Entonces
+		puntaje= puntaje+2
+	FinSi
+	prioridad=puntaje
+FinFuncion
 
+Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
+	definir nombrePrioridad Como Caracter
+	si prioridad <= 2 Entonces
+		nombrePrioridad="baja"
+	sino
+		si prioridad < 6 Entonces
+			nombrePrioridad="media"
+		SiNo
+			nombrePrioridad="alta"
+		FinSi
+	FinSi
+FinFuncion
 
