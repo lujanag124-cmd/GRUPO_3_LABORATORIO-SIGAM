@@ -338,9 +338,9 @@ FinSubAlgoritmo
 // Informacion hardcodeada, relevante para el proceso 
 SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Referencia, situaciones Por Referencia, nombresChoferes Por Referencia, usuariosChoferes Por Referencia, clavesChoferes Por Referencia, estadosChoferes Por Referencia, tiposGrua Por Referencia, localidadesChoferes Por Referencia, estadosDisponibles Por Referencia, estadosServicio Por Referencia)
 	// Ubicaciones
-	ubicaciones[0] <- "Merlo"
-	ubicaciones[1] <- "Ituzaingo"
-	ubicaciones[2] <- "Moron"
+	ubicaciones[0] <- "Merlo" // chofer1
+	ubicaciones[1] <- "Ituzaingo" // chofer2
+	ubicaciones[2] <- "Moron" // chofer3
 	
 	// Tipos de Vehiculos
 	tipoVehiculos[0] <- "Moto"
@@ -356,9 +356,9 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	situaciones[2] <- "Accidente/Choque "
 	
 	// Datos de Choferes
-	nombresChoferes[0] <- "Ruben"
-	nombresChoferes[1] <- "Carlos"
-	nombresChoferes[2] <- "Tomas"
+	nombresChoferes[0] <- "Ruben" // chofer1
+	nombresChoferes[1] <- "Carlos" // chofer2
+	nombresChoferes[2] <- "Tomas" // chofer3
 	
 	estadosChoferes[0] <- "Disponible"
 	estadosChoferes[1] <- "Ocupado"
@@ -399,7 +399,7 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Definir opcionUbicaciones Como Entero
 	Definir opcionSituaciones Como Entero
 	Definir opcionVehiculos Como Entero
-	definir prioridad Como Entero
+	Definir prioridad Como Entero
 	
 	Repetir
 		mostrarSolicitudAuxilio;
@@ -469,9 +469,9 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
         FinSi
     Hasta Que validarPatente(patentes[cantSolicitudes])
     
-	prioridad=calcularPrioridad
+	prioridad = calcularPrioridad
 	
-	puntajesPrioridad[cantSolicitudes]=prioridad
+	puntajesPrioridad[cantSolicitudes] = prioridad
 	
 //	Limpiar Pantalla
 	Escribir "--------------------------------------";
@@ -671,36 +671,60 @@ SubAlgoritmo iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estad
 	FinPara
 FinSubAlgoritmo
 
-// CHOFFER: finalizar viaje y cambiar el estado
-SubAlgoritmo finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes Por Referencia, estadosServicio,estadosChoferes Por Referencia,estadosDisponibles)
-    Definir i Como Entero
-    Definir viajeEncontrado Como Logico
-    
-    viajeEncontrado <- Falso
-    
-    Para i = 0 Hasta cantSolicitudes-1 Hacer
-        Si choferesAsignados[i] == choferLogueado Y viajeEncontrado = Falso Entonces
-            Si estadosSolicitudes[i] == estadosServicio[2] Entonces
-                estadosSolicitudes[i] = estadosServicio[3]
-                estadosChoferes[choferLogueado] = estadosDisponibles[0]
-                viajeEncontrado <- Verdadero
-                
-                Limpiar Pantalla
-                Escribir "Viaje finalizado"
-                Escribir "Presione una tecla para volver al menu..."
-                Esperar Tecla
-                Limpiar Pantalla
-            FinSi
-        FinSi
-    FinPara
-    
-    Si viajeEncontrado = Falso Entonces
-        Limpiar Pantalla
-        Escribir "El viaje aun no fue iniciado."
-        Escribir "Presione una tecla para volver al menu..."
-        Esperar Tecla
-        Limpiar Pantalla
-    FinSi
+ 
+// CHOFER: finalizar viaje y cambiar el estado
+SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados, choferLogueado, estadosSolicitudes Por Referencia, estadosServicio, estadosChoferes Por Referencia, estadosDisponibles)
+	Definir i Como Entero
+	Definir tieneViajeActivo, viajeFinalizado, viajePendiente Como Logico 
+	
+	tieneViajeActivo <- Falso
+	viajeFinalizado <- Falso
+	viajePendiente <- Falso
+	 
+	Si cantSolicitudes > 0 Entonces
+		Para i = 0 Hasta cantSolicitudes-1 Hacer
+			// valida si la solicitud es del usuario que inicio sesion
+			Si choferesAsignados[i] == choferLogueado Entonces
+				
+				// Si el viaje esta "En camino", lo podemos finalizar
+				Si estadosSolicitudes[i] == estadosServicio[2] Entonces
+					estadosSolicitudes[i] = estadosServicio[3] // finalizamos el viaje
+					estadosChoferes[choferLogueado] = estadosDisponibles[0] // Al finalizar viaje, cambiamos el estado del chofer adisponible
+					
+					viajeFinalizado <- Verdadero
+					tieneViajeActivo <- Verdadero
+				SiNo
+					// Si el viaje esta "Asignado", todavia no esta iniciado (no se realizo"Iniciar viaje")
+					Si estadosSolicitudes[i] == estadosServicio[1] Entonces
+						
+						viajePendiente <- Verdadero
+						tieneViajeActivo <- Verdadero
+					FinSi
+				FinSi
+				
+			FinSi
+		FinPara
+	FinSi
+	
+	Limpiar Pantalla
+	
+	//Mensajes segun corresponda
+	Si NO tieneViajeActivo Entonces
+		Escribir "No tiene viajes asignados para finalizar."
+	SiNo
+		Si viajeFinalizado Entonces
+			Escribir "Viaje finalizado con exito."
+		SiNo
+			Si viajePendiente Entonces
+				Escribir "El viaje aun no fue iniciado. Por favor, inicie el viaje para finalizarlo"
+			FinSi
+		FinSi
+	FinSi
+	
+	Escribir ""
+	Escribir "Presione una tecla para volver al menu..."
+	Esperar Tecla
+	Limpiar Pantalla
 FinSubAlgoritmo
 
 // ..............................................................................................
@@ -860,8 +884,8 @@ Funcion opcionChofer <- opcionServicioChofer
 FinFuncion
 
 
-funcion prioridad<- calcularPrioridad
-	definir opcionVia, opcionZonaPeligrosa, opcionObstruyeCirculacion, opcionTotalmenteDetenido, puntaje,prioridad Como Entero
+Funcion prioridad <- calcularPrioridad
+	Definir opcionVia, opcionZonaPeligrosa, opcionObstruyeCirculacion, opcionTotalmenteDetenido, puntaje,prioridad Como Entero
 	puntaje =0;
 	
 	mostrarSolicitudAuxilio;
@@ -882,9 +906,9 @@ funcion prioridad<- calcularPrioridad
 	Hasta Que opcionVia >= 1 y opcionVia <= 3
 	
 	segun opcionVia Hacer
-		1:puntaje=puntaje+3
-		2:puntaje=puntaje+1
-		3:puntaje=puntaje+0
+		1:puntaje = puntaje + 3
+		2:puntaje = puntaje + 1
+		3:puntaje = puntaje + 0
 	FinSegun
 	
 	Repetir
@@ -904,7 +928,7 @@ funcion prioridad<- calcularPrioridad
 	Hasta Que opcionZonaPeligrosa >= 1 y opcionZonaPeligrosa <= 2
 	
 	si opcionZonaPeligrosa=1 Entonces
-		puntaje= puntaje+3
+		puntaje = puntaje + 3
 	FinSi
 	
 	Repetir
@@ -924,7 +948,7 @@ funcion prioridad<- calcularPrioridad
 	Hasta Que opcionObstruyeCirculacion >= 1 y opcionObstruyeCirculacion <= 2
 	
 	Si opcionObstruyeCirculacion=1 Entonces
-		puntaje= puntaje+2
+		puntaje = puntaje + 2
 	FinSi
 	
 	Repetir
@@ -944,20 +968,20 @@ funcion prioridad<- calcularPrioridad
 	Hasta Que opcionTotalmenteDetenido >= 1 y opcionTotalmenteDetenido <= 2
 	
 	Si opcionTotalmenteDetenido=1 Entonces
-		puntaje= puntaje+2
+		puntaje = puntaje + 2
 	FinSi
-	prioridad=puntaje
+	prioridad = puntaje
 FinFuncion
 
 Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
-	definir nombrePrioridad Como Caracter
+	Definir nombrePrioridad Como Caracter
 	si prioridad <= 2 Entonces
-		nombrePrioridad="baja"
+		nombrePrioridad = "Baja"
 	sino
 		si prioridad < 6 Entonces
-			nombrePrioridad="media"
+			nombrePrioridad = "Media"
 		SiNo
-			nombrePrioridad="alta"
+			nombrePrioridad = "Alta"
 		FinSi
 	FinSi
 FinFuncion
