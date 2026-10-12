@@ -90,7 +90,7 @@ Algoritmo SIGAM
 									Limpiar Pantalla
 							FinSegun
 						FinSi
-						3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles)
+						3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles,solicitudUbicaciones, localidadesChoferes,puntajesPrioridad,nombresChoferes)
 						4:contactarSoporte
 						5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
 							Escribir " "
@@ -113,7 +113,7 @@ Algoritmo SIGAM
 							
 							si solicitudConfirmada= Verdadero Entonces
 								choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-								motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
+								motorDeAsignacion(choferEncontrado,cantSolicitudes-1,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
 								opcionPost <- opcionPostSolicitud
 								Segun opcionPost Hacer
 									1: si cantSolicitudes>0 Entonces	
@@ -222,9 +222,9 @@ Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia)
 	Definir i Como Entero
 	Definir usuarios, claves, roles, tipoUsuario Como Caracter;
 	
-	Dimension usuarios[8]
-	Dimension claves[8]
-	Dimension roles[8]
+	Dimension usuarios[9]
+	Dimension claves[9]
+	Dimension roles[9]
 	
 	// Credenciales de chofer
 	usuarios[0] <- "chofer1";  claves[0] <- "chofer123";  roles[0] <- "Chofer" // Ruben
@@ -234,13 +234,14 @@ Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia)
 	// Credenciales de cliente
 	usuarios[3] <- "cliente1"; claves[3] <- "cliente123"; roles[3] <- "Cliente"
 	usuarios[4] <- "cliente2"; claves[4] <- "cliente123"; roles[4] <- "Cliente"
+	usuarios[5] <- "cliente3"; claves[5] <- "cliente123"; roles[5] <- "Cliente"
 	
 	// Credenciales de admin
-	usuarios[5] <- "admin1";    claves[5] <- "admin123";    roles[5] <- "Admin"
-	usuarios[6] <- "admin2";    claves[6] <- "admin456";    roles[6] <- "Admin"
+	usuarios[6] <- "admin1";    claves[6] <- "admin123";    roles[6] <- "Admin"
+	usuarios[7] <- "admin2";    claves[7] <- "admin456";    roles[7] <- "Admin"
 	
 	// Credenciales de soporte
-	usuarios[7] <- "soporte1";  claves[7] <- "soporte123";  roles[7] <- "Soporte"
+	usuarios[8] <- "soporte1";  claves[8] <- "soporte123";  roles[8] <- "Soporte"
 	
 	tipoUsuario <- "Incorrecto"
 	i <- 0
@@ -572,21 +573,21 @@ Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,loc
 			FinSi
 		FinSi
 	FinPara
-FinFuncion
+FinFuncion  
 
 // Motor de asignación: 
-SubAlgoritmo motorDeAsignacion(choferEncontrado,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes, estadosSolicitudes Por Referencia, estadosServicio)
+SubAlgoritmo motorDeAsignacion(choferEncontrado,indiceSolicitud,nombresChoferes,choferesAsignados Por Referencia,estadosChoferes Por Referencia,cantSolicitudes, estadosSolicitudes Por Referencia, estadosServicio)
 	Si choferEncontrado <> -1 Entonces
-		choferesAsignados[cantSolicitudes-1]=choferEncontrado;
+		choferesAsignados[indiceSolicitud]=choferEncontrado;
 		estadosChoferes[choferEncontrado]= "Ocupado"
-		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[1]
+		estadosSolicitudes[indiceSolicitud]=estadosServicio[1]
 		Escribir "Su solicitud ha sido confirmada."
 		Escribir "Estado: ", estadosServicio[1]
 	SiNo
 		Escribir "Su solicitud ha sido confirmada."
 		Escribir "En estos momentos no contamos con choferes disponibles. Su solicitud se encuentra en estado pendiente de asignación"
-		estadosSolicitudes[CantSolicitudes-1]=estadosServicio[0]
-		choferesAsignados[cantSolicitudes-1]=-1
+		estadosSolicitudes[indiceSolicitud]=estadosServicio[0]
+		choferesAsignados[indiceSolicitud]=-1
 	FinSi
 FinSubAlgoritmo
 
@@ -673,8 +674,8 @@ FinSubAlgoritmo
 
  
 // CHOFER: finalizar viaje y cambiar el estado
-SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados, choferLogueado, estadosSolicitudes Por Referencia, estadosServicio, estadosChoferes Por Referencia, estadosDisponibles)
-	Definir i Como Entero
+SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados Por Referencia, choferLogueado, estadosSolicitudes Por Referencia, estadosServicio, estadosChoferes Por Referencia, estadosDisponibles,solicitudUbicaciones, localidadesChoferes, puntajesPrioridad,nombresChoferes)
+	Definir i, solicitudEncontrada Como Entero
 	Definir tieneViajeActivo, viajeFinalizado, viajePendiente Como Logico 
 	
 	tieneViajeActivo <- Falso
@@ -704,6 +705,13 @@ SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados, choferLogueado, 
 				
 			FinSi
 		FinPara
+	FinSi
+	
+	Si viajeFinalizado Entonces
+		solicitudEncontrada=buscarSolicitudPendiente(estadosSolicitudes, solicitudUbicaciones, localidadesChoferes, puntajesPrioridad, cantSolicitudes, choferLogueado)
+		Si solicitudEncontrada <> -1 Entonces
+			motorDeAsignacion(choferLogueado, solicitudEncontrada, nombresChoferes, choferesAsignados, estadosChoferes, cantSolicitudes, estadosSolicitudes, estadosServicio)
+		FinSi
 	FinSi
 	
 	Limpiar Pantalla
@@ -984,5 +992,22 @@ Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
 			nombrePrioridad = "Alta"
 		FinSi
 	FinSi
+FinFuncion
+
+Funcion solicitudEncontrada<- buscarSolicitudPendiente(estadosSolicitudes, solicitudUbicaciones, localidadesChoferes,puntajesPrioridad, cantSolicitudes,choferLogueado)
+	definir solicitudEncontrada, mayorPuntaje, i Como Entero
+	solicitudEncontrada=-1
+	mayorPuntaje=-1 
+	i=0
+	Para i=0 Hasta cantSolicitudes-1 Hacer
+		Si estadosSolicitudes[i]= "Pendiente" Entonces
+			Si localidadesChoferes[choferLogueado] = solicitudUbicaciones[i] Entonces
+				Si puntajesPrioridad[i] > mayorPuntaje Entonces
+					mayorPuntaje= puntajesPrioridad[i]
+					solicitudEncontrada = i
+				FinSi
+			FinSi
+		FinSi
+	FinPara
 FinFuncion
 
