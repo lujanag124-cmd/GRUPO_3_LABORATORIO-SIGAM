@@ -674,14 +674,35 @@ FinSubAlgoritmo
 
 // CHOFER: iniciar viaje y cambiar el estado
 SubAlgoritmo iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes Por Referencia,estadosServicio)
+	Limpiar Pantalla
 	Definir i Como Entero
+	Definir hayServicio, viajeIniciado como logico 
+	hayServicio = Falso
+    viajeIniciado = Falso
 	para i = 0 hasta cantSolicitudes-1 Hacer
-		si choferesAsignados[i] == choferLogueado Entonces
+		si choferesAsignados[i] == choferLogueado y estadosSolicitudes[i] <> "Finalizado" Entonces
+			hayServicio= Verdadero
 			Si estadosSolicitudes[i] == estadosServicio[1] Entonces
 				estadosSolicitudes[i] = estadosServicio[2]
+				viajeIniciado= Verdadero
 			FinSi
 		FinSi
 	FinPara
+	
+	Si hayServicio= Falso Entonces
+		Escribir "No tiene ningun servicio asignado"
+	sino
+		si viajeIniciado = Verdadero Entonces
+			Escribir "El viaje se inicio correctamente"
+		SiNo
+			Escribir "El viaje ya fue iniciado"
+		FinSi
+	FinSi
+	
+	Escribir ""
+	Escribir "Presione una tecla para volver al menu..."
+	Esperar Tecla
+	Limpiar Pantalla
 FinSubAlgoritmo
 
  
