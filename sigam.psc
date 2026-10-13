@@ -657,7 +657,7 @@ SubAlgoritmo mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogue
 	hayServicio = Falso
 	
 	para i = 0 hasta cantSolicitudes-1 Hacer
-		si choferesAsignados[i] == choferLogueado Entonces
+		si choferesAsignados[i] == choferLogueado y estadosSolicitudes[i] <> "Finalizado" Entonces
 			hayServicio=Verdadero
 			Escribir "Patente: ",patentes[i]
 			Escribir "Ubicacion: ",solicitudUbicaciones[i]
