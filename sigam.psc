@@ -6,10 +6,10 @@ Algoritmo SIGAM
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter;
-	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, opcionChofer Como Entero;
+	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado,clienteLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
-	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad Como Entero;
+	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes Como Entero;
 	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
@@ -30,6 +30,7 @@ Algoritmo SIGAM
 	Dimension estadosDisponibles[3];
 	Dimension estadosServicio[5];
 	Dimension puntajesPrioridad[10];
+	Dimension clientesSolicitudes[10];
 	
 	//Datos hardcodeados para los vectores
 	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio)
@@ -37,6 +38,7 @@ Algoritmo SIGAM
 	cantCanceladas = 0;
 	cantSolicitudes = 0;
 	choferLogueado = -1;
+	clienteLogueado = -1; 
 	
 	
 	Mientras verdadero hacer
@@ -50,7 +52,7 @@ Algoritmo SIGAM
 			
 			// Inicio de sesion
 			inicioSesion(usuario, password);
-			valorUsuario <- validaLogin (usuario, password, choferLogueado)
+			valorUsuario <- validaLogin (usuario, password, choferLogueado, clienteLogueado)
 			
 			// Validacion para credenciales incorrectas en login
 			si valorUsuario == "Incorrecto" Entonces
@@ -107,7 +109,7 @@ Algoritmo SIGAM
 					menuCliente(opcionUsuario)
 					Segun opcionUsuario Hacer
 						1:si cantSolicitudes < 10 Entonces
-							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad)
+							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad,clientesSolicitudes,clienteLogueado)
 							
 							mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
 							
@@ -118,7 +120,7 @@ Algoritmo SIGAM
 								Segun opcionPost Hacer
 									1: si cantSolicitudes>0 Entonces	
 											Limpiar Pantalla
-											mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio)
+											mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio, clientesSolicitudes, clienteLogueado)
 										SiNo
 											Escribir "No hay solicitudes registradas"
 										FinSi
@@ -133,18 +135,8 @@ Algoritmo SIGAM
 						
 						Esperar 1 Segundos
 						Limpiar Pantalla
-					2:si cantSolicitudes>0 Entonces	
-						Limpiar Pantalla
-						mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio)
-					SiNo
-						Limpiar Pantalla
-						Escribir "No hay solicitudes registradas"
-						Escribir ""
-						Escribir "Presione una tecla para volver al menu..."
-						Esperar Tecla
-						Limpiar Pantalla
-						
-					FinSi
+					2:	Limpiar Pantalla
+						mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio, clientesSolicitudes, clienteLogueado)
 					3:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
 						Escribir " "
 						Escribir "Presione una tecla para volver al menu..."
@@ -218,7 +210,7 @@ FinSubAlgoritmo
 
 
 //Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
-Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia)  
+Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, clienteLogueado Por Referencia)  
 	Definir i Como Entero
 	Definir usuarios, claves, roles, tipoUsuario Como Caracter;
 	
@@ -247,13 +239,17 @@ Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia)
 	i <- 0
 	
 	// finaliza cuando encuentra la credencial correcta
-	Mientras i < 8 Y tipoUsuario == "Incorrecto" Hacer
+	Mientras i < 9 Y tipoUsuario == "Incorrecto" Hacer
 		Si usu == usuarios[i] Y psw == claves[i] Entonces
 			tipoUsuario <- roles[i]
 			
 			// Si el usuario encontrado es Chofer se guarda la posición
 			Si roles[i] == "Chofer" Entonces
 				choferLogueado <- i
+			FinSi
+			//Si el usuario encontrado es Cliente se guarda la posición
+			Si roles[i] == "Cliente" Entonces
+				clienteLogueado <- i -3
 			FinSi
 		FinSi
 		i <- i + 1
@@ -394,7 +390,7 @@ SubAlgoritmo mostrarSolicitudAuxilio
 FinSubAlgoritmo
 
 // Funcion para solicitud de auxilio
-Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia)
+Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia,clientesSolicitudes Por Referencia,clienteLogueado)
 	Definir confirmar como entero; 
 	Definir confirmada Como Logico
 	Definir opcionUbicaciones Como Entero
@@ -497,6 +493,7 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	
 	si confirmar = 1 Entonces
 		confirmada = Verdadero;
+		clientesSolicitudes[cantSolicitudes]=clienteLogueado
 		cantSolicitudes=cantSolicitudes+1
 		
 	SiNo
@@ -609,23 +606,38 @@ FinFuncion
  
  
 //  Detalle de servicio para > SUBMENU CLIENTE: 1. Consultar detalles del servicio  
-SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicios)
+SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicios,clientesSolicitudes, clienteLogueado)
+	Limpiar Pantalla
 	Escribir "--------------------------------------";
 	Escribir "       Detalles del servicio          ";
 	Escribir "--------------------------------------"
 	Escribir "";
-	Escribir "Patente: ", patentes[cantSolicitudes-1];
-	Escribir "Ubicacion: ", solicitudUbicaciones[cantSolicitudes-1];
-	Escribir "Vehiculo: ", solicitudTipoVehiculos[cantSolicitudes-1];
-	Escribir "Situacion: ",solicitudSituaciones[cantSolicitudes-1];
-	Escribir "Estado: ", estadosSolicitudes[cantSolicitudes-1];
 	
-	si estadosSolicitudes[cantSolicitudes-1]= estadosServicios[0] Entonces
-		Escribir  "Chofer: Aun no asignado" 
-	SiNo
-		Escribir "Chofer: ", nombresChoferes[choferesAsignados[cantSolicitudes-1]]
+	Definir i como entero;
+	Definir encontrada como logico;
+	encontrada = falso;
+	
+	Para i=0 Hasta  cantSolicitudes -1 Hacer
+		Si clientesSolicitudes[i] = clienteLogueado y estadosSolicitudes[i] <> "Finalizado" Entonces
+			encontrada= Verdadero
+			Escribir "Patente: ", patentes[i];
+			Escribir "Ubicacion: ", solicitudUbicaciones[i];
+			Escribir "Vehiculo: ", solicitudTipoVehiculos[i];
+			Escribir "Situacion: ",solicitudSituaciones[i];
+			Escribir "Estado: ", estadosSolicitudes[i];
+			
+			Si estadosSolicitudes[i]= estadosServicios[0] Entonces
+				Escribir  "Chofer: Aun no asignado" 
+			SiNo
+				Escribir "Chofer: ", nombresChoferes[choferesAsignados[i]]
+			FinSi
+		FinSi
+	FinPara
+	
+	Si encontrada= falso Entonces
+		Escribir "No tiene servicios activos"
 	FinSi
-	
+
 	Escribir "Presione una tecla para volver al menu..."
 	Esperar Tecla
 	Limpiar Pantalla
