@@ -6,11 +6,16 @@ Algoritmo SIGAM
 	Definir usuario, password, ubicaciones, tipoVehiculos, situaciones, patentes Como Caracter;
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter;
-	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado,clienteLogueado, opcionChofer Como Entero;
+	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, clienteLogueado, adminLogueado, soporteLogueado, opcionChofer Como Entero;
 	Definir loginActivo, solicitudConfirmada Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
-	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes Como Entero;
-	
+	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes Como Entero;  
+	//Soporte 
+	Definir titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos Como Caracter;
+	Definir cantReclamos Como Entero;
+	Definir estadosUsuariosSistema Como Caracter;  
+	Definir nombresClientes Como Caracter;
+	  
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
 	Dimension solicitudTipoVehiculos[10];
@@ -31,14 +36,23 @@ Algoritmo SIGAM
 	Dimension estadosServicio[5];
 	Dimension puntajesPrioridad[10];
 	Dimension clientesSolicitudes[10];
+	Dimension titulosReclamos[10];
+	Dimension acusadosReclamos[10];
+	Dimension mensajesReclamos[10];
+	Dimension tiposUsuarios[10];
+	Dimension estadosReclamos[10];
+	Dimension respuestasReclamos[10];
+	Dimension estadosUsuariosSistema[9] 
+	Dimension nombresClientes[3];
 	
 	//Datos hardcodeados para los vectores
-	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio)
+	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosUsuariosSistema, nombresClientes)
 	
 	cantCanceladas = 0;
 	cantSolicitudes = 0;
 	choferLogueado = -1;
 	clienteLogueado = -1; 
+	cantReclamos = 0; // Soporte
 	
 	
 	Mientras verdadero hacer
@@ -52,12 +66,23 @@ Algoritmo SIGAM
 			
 			// Inicio de sesion
 			inicioSesion(usuario, password);
-			valorUsuario <- validaLogin (usuario, password, choferLogueado, clienteLogueado)
+			valorUsuario <- validaLogin (usuario, password, choferLogueado, clienteLogueado, adminLogueado, soporteLogueado, estadosUsuariosSistema)
+			
 			
 			// Validacion para credenciales incorrectas en login
 			si valorUsuario == "Incorrecto" Entonces
 				Escribir "Usuario o contraseña incorrecta. Por favor, intente nuevamente."
 				Esperar 2.0 Segundos
+				Limpiar Pantalla
+			FinSi
+			
+			si valorUsuario == "Suspendido" Entonces
+				Limpiar Pantalla
+				Escribir "=========================================================="
+				Escribir "  Acceso denegado: Su cuenta se encuentra SUSPENDIDA.     "
+				Escribir "  Comuníquese con Soporte para más información.           "
+				Escribir "=========================================================="
+				Esperar 3.0 Segundos
 				Limpiar Pantalla
 			FinSi
 		FinMientras
@@ -93,7 +118,7 @@ Algoritmo SIGAM
 							FinSegun
 						FinSi
 						3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles,solicitudUbicaciones, localidadesChoferes,puntajesPrioridad,nombresChoferes)
-						4:contactarSoporte
+						4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Chofer")
 						5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
 							Escribir " "
 							Escribir "Presione una tecla para volver al menu..."
@@ -142,7 +167,7 @@ Algoritmo SIGAM
 						Escribir "Presione una tecla para volver al menu..."
 						Esperar Tecla
 						Limpiar Pantalla
-					4:contactarSoporte
+					4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Cliente")
 					5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
 						Escribir " "
 						Escribir "Presione una tecla para volver al menu..."
@@ -171,9 +196,9 @@ Algoritmo SIGAM
 				"Soporte" :
 					menuSoporte(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:
-						2:
-						3:
+						1:verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
+						2:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
+						3:verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
 						4:loginActivo <- Falso
 						De Otro Modo:
 							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
@@ -210,9 +235,9 @@ FinSubAlgoritmo
 
 
 //Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
-Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, clienteLogueado Por Referencia)  
+Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, clienteLogueado Por Referencia, adminLogeado Por Referencia, soporteLogueado Por Referencia, estadosUsuariosSistema Por Referencia)   
 	Definir i Como Entero
-	Definir usuarios, claves, roles, tipoUsuario Como Caracter;
+	Definir usuarios, claves, roles, tipoUsuario Como Caracter; 
 	
 	Dimension usuarios[9]
 	Dimension claves[9]
@@ -241,21 +266,34 @@ Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, cli
 	// finaliza cuando encuentra la credencial correcta
 	Mientras i < 9 Y tipoUsuario == "Incorrecto" Hacer
 		Si usu == usuarios[i] Y psw == claves[i] Entonces
-			tipoUsuario <- roles[i]
+			 
+			Si estadosUsuariosSistema[i] == "Activo" Entonces
+				tipoUsuario <- roles[i]
+				
+				// Si el usuario encontrado es Chofer se guarda la posición
+				Si roles[i] == "Chofer" Entonces
+					choferLogueado <- i
+				FinSi
+				//Si el usuario encontrado es Cliente se guarda la posición
+				Si roles[i] == "Cliente" Entonces
+					clienteLogueado <- i -3
+				FinSi
+				//Si el usuario encontrado es Admin se guarda la posición
+				Si roles[i] == "Admin" Entonces
+					adminLogueado <- i 
+				FinSi
+				//Si el usuario encontrado es Soporte se guarda la posición
+				Si roles[i] == "Soporte" Entonces
+					soporteLogueado <- i 
+				FinSi
+			SiNo
+				tipoUsuario <- "Suspendido"
+			FinSi 
 			
-			// Si el usuario encontrado es Chofer se guarda la posición
-			Si roles[i] == "Chofer" Entonces
-				choferLogueado <- i
-			FinSi
-			//Si el usuario encontrado es Cliente se guarda la posición
-			Si roles[i] == "Cliente" Entonces
-				clienteLogueado <- i -3
-			FinSi
 		FinSi
 		i <- i + 1
 	FinMientras
-FinFuncion
-
+FinFuncion	 
 
 // .......................................
 //              Sección menus
@@ -317,9 +355,9 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "               Menu Soporte               "
 	Escribir "=========================================="
-	Escribir "1) Ver incidencias pendientes";
-	Escribir "2) Gestionar incidencia";
-	Escribir "3) Ver historial de incidencias";
+	Escribir "1) Ver reclamos pendientes";
+	Escribir "2) Gestionar usuarios";
+	Escribir "3) Ver historial de reclamos";
 	Escribir "4) Cerrar sesion";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
@@ -333,7 +371,13 @@ FinSubAlgoritmo
 // ..............................................................................................
 
 // Informacion hardcodeada, relevante para el proceso 
-SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Referencia, situaciones Por Referencia, nombresChoferes Por Referencia, usuariosChoferes Por Referencia, clavesChoferes Por Referencia, estadosChoferes Por Referencia, tiposGrua Por Referencia, localidadesChoferes Por Referencia, estadosDisponibles Por Referencia, estadosServicio Por Referencia)
+SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Referencia, situaciones Por Referencia, nombresChoferes Por Referencia, usuariosChoferes Por Referencia, clavesChoferes Por Referencia, estadosChoferes Por Referencia, tiposGrua Por Referencia, localidadesChoferes Por Referencia, estadosDisponibles Por Referencia, estadosServicio Por Referencia, estadosUsuariosSistema Por Referencia, nombresClientes Por Referencia)
+	Definir i Como Entero;
+	// inician todos los usuarios como "Activo" por default, esto ayuda al usuario soporte despues para activar/desactivar usuarios
+	Para i <- 0 Hasta 8 Hacer
+		estadosUsuariosSistema[i] <- "Activo"
+	FinPara
+	
 	// Ubicaciones
 	ubicaciones[0] <- "Merlo" // chofer1
 	ubicaciones[1] <- "Ituzaingo" // chofer2
@@ -353,9 +397,14 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	situaciones[2] <- "Accidente/Choque "
 	
 	// Datos de Choferes
-	nombresChoferes[0] <- "Ruben" // chofer1
-	nombresChoferes[1] <- "Carlos" // chofer2
-	nombresChoferes[2] <- "Tomas" // chofer3
+	nombresChoferes[0] <- "Ruben Diaz" // chofer1
+	nombresChoferes[1] <- "Carlos Pellegrini" // chofer2
+	nombresChoferes[2] <- "Tomas Perez" // chofer3
+	
+	// Nombres de Clientes
+	nombresClientes[0] <- "Lucia Gomez"   // cliente1 (índice 3 en sistema)
+	nombresClientes[1] <- "Mateo Rossi"   // cliente2 (índice 4 en sistema)
+	nombresClientes[2] <- "Sofia Benitez" // cliente3 (índice 5 en sistema)
 	
 	estadosChoferes[0] <- "Disponible"
 	estadosChoferes[1] <- "Ocupado"
@@ -377,7 +426,6 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	estadosServicio[2] <- "En camino"
 	estadosServicio[3] <- "Finalizado"
 	estadosServicio[4] <- "Cancelado" //todavia no agregamos una funcion para este estado
-	
 FinSubAlgoritmo
 
 // Mensaje para solicitud de auxilio
@@ -771,40 +819,86 @@ FinSubAlgoritmo
 // ..............................................................................................
 //                                 FIN para el proceso de solicitudes de auxilio
 // ..............................................................................................
-
-
+ 
 // ......................................................................................
 //                  CHOFER Y CLIENTE >> MENÚ - OPCION 4: Contactar a soporte
 // ......................................................................................
-
-SubAlgoritmo contactarSoporte
-    Definir mensaje Como Caracter
-    Definir limiteCaracteres Como Entero
-    limiteCaracteres <- 20 // solo de prueba, se cambia al que querramos
-    
-    Repetir
-        Limpiar Pantalla
+SubAlgoritmo contactarSoporte(titulosReclamos Por Referencia, acusadosReclamos Por Referencia, mensajesReclamos Por Referencia, tiposUsuarios Por Referencia, estadosReclamos Por Referencia, cantidadReclamos Por Referencia, tipoUsuarioActual)
+	Definir tituloReclamo, acusadoReclamo, contenidoMensaje Como Caracter
+	Definir limiteCaracteres Como Entero
+    limiteCaracteres <- 20 // solo de prueba, se cambia al que querramos 
+	 
+		// 1. Ingresar Título del reclamo 
+		Repetir
+		Limpiar Pantalla
         Escribir "=========================================================================================="
-        Escribir "                              Contactar a Soporte                                         "
+        Escribir "                                Contactar a Soporte                                       "
         Escribir "=========================================================================================="
-        Escribir "Describa su consulta o inconveniente. (Maximo ", limiteCaracteres, " caracteres - Presione ENTER para enviar)"
-        Escribir ".........................................................................................."
+		Escribir ".........................................................................................."
+		Escribir "             Por favor, complete los campos - Presione ENTER para continuar)"
+		Escribir ".........................................................................................."
+		
+			Escribir "Ingrese el título del reclamo: "  Sin Saltar 
+			Leer tituloReclamo
+			Si tituloReclamo == "" Entonces
+				Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
+				Esperar 3.0 Segundos
+			FinSi
+		Hasta Que tituloReclamo <> "" // distinto de "texto vacio"
+		
+		// 2. Ingresar el nombre del usuario acusado 
+		Repetir
+		Limpiar Pantalla
+		Escribir "=========================================================================================="
+		Escribir "                                Contactar a Soporte                                       "
+		Escribir "=========================================================================================="
+		Escribir ".........................................................................................."
+		Escribir "             Por favor, complete los campos - Presione ENTER para continuar)"
+		Escribir ".........................................................................................."
+		Escribir "Título del reclamo: ", tituloReclamo 
+			Escribir "Ingrese el nombre completo del usuario acusado: "  Sin Saltar
+			Leer acusadoReclamo
+			Si acusadoReclamo == "" Entonces
+				Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
+				Esperar 3.0 Segundos
+			FinSi
+		Hasta Que acusadoReclamo <> "" // distinto de "texto vacio"
+		
+		// 3. Ingresar y validar el contenido/mensaje
+		Repetir 
+			Limpiar Pantalla
+			Escribir "=========================================================================================="
+			Escribir "                                Contactar a Soporte                                       "
+			Escribir "=========================================================================================="
+			Escribir "............................................................................................................."
+			Escribir "Detalle su reclamo o consulta. (Maximo ", limiteCaracteres, " caracteres - Presione ENTER para enviar)"
+			Escribir "............................................................................................................."
+			Escribir "Título del reclamo: ", tituloReclamo
+			Escribir "Usuario acusado: ", acusadoReclamo
+			Escribir Sin Saltar "Contenido del mensaje: "
+			Leer contenidoMensaje; 
         
-        Escribir Sin Saltar "Mensaje: "
-        Leer mensaje;
-        
-        Si NO validarMensajeSoporte(mensaje, limiteCaracteres) Entonces
+        Si NO validarMensajeSoporte(contenidoMensaje, limiteCaracteres) Entonces
             Escribir ""
-            Si Longitud(mensaje) < 5 Entonces   // cambiar longitud por el valor que querramos
+            Si Longitud(contenidoMensaje) < 10 Entonces   // cambiar longitud por el valor que querramos
                 Escribir "El mensaje es muy breve. Por favor, describa su problema con mayor detalle."
             SiNo
-                Escribir "Supero el limite de ", limiteCaracteres, " caracteres (escribio ", Longitud(mensaje), ")."
+                Escribir "Supero el limite de ", limiteCaracteres, " caracteres (escribio ", Longitud(contenidoMensaje), ")."
             FinSi
             Esperar 3.0 Segundos
-        FinSi
-    Hasta Que validarMensajeSoporte(mensaje, limiteCaracteres)
+        FinSi 
+	Hasta Que validarMensajeSoporte(contenidoMensaje, limiteCaracteres) 
     
-    // Confirmación al enviarlo con éxito
+	
+	// Guarda la info en vectores  
+	titulosReclamos[cantidadReclamos]  = tituloReclamo
+	acusadosReclamos[cantidadReclamos] = acusadoReclamo
+	mensajesReclamos[cantidadReclamos] = contenidoMensaje
+	tiposUsuarios[cantidadReclamos]    = tipoUsuarioActual //recibe el texto "Chofer" o "Cliente" a través del parámetro tipoUsuarioActual al preseionar opción 4"
+	estadosReclamos[cantidadReclamos]  = "Pendiente" // El estado inicia en pendiente, para el filtro de usuario Soporte
+	cantidadReclamos = cantidadReclamos + 1  // para que el prox reclamo se guarde en una nueva posición
+	
+    // Mensaje de confirmacion al enviar con exito
 	Limpiar Pantalla
     Escribir "----------------------------------------------------------------------------"
     Escribir "¡Mensaje enviado con exito! Nuestra area de Soporte se contactara con usted."
@@ -814,14 +908,13 @@ SubAlgoritmo contactarSoporte
     Limpiar Pantalla
 FinSubAlgoritmo
 
-
 // Validación para que el usuario no supere el limite de caracteres ingresados
 Funcion esValido <- validarMensajeSoporte(mensaje, limite)
     Definir esValido Como Logico
     Definir limTexto Como Entero
-    
+	
     limTexto <- Longitud(mensaje)
-    
+	
     // Verifica que no esté vacío y no supere el límite
     Si limTexto >= 5 Y limTexto <= limite Entonces  // cambiar limTexto por el valor que querramos
         esValido <- Verdadero
@@ -830,6 +923,318 @@ Funcion esValido <- validarMensajeSoporte(mensaje, limite)
     FinSi
 FinFuncion
 
+// ......................................................................................
+//                         FUNCIONES y PROCESOS DEL USUARIO SOPORTE 
+// ......................................................................................
+// MENU SOPORTE: 1) Ver reclamos pendientes
+// ......................................................................................
+SubAlgoritmo verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos Por Referencia, respuestasReclamos Por Referencia, cantReclamos)
+	Definir i Como Entero
+	Definir hayPendientes Como Logico
+	Definir opcionMenu, numReclamo, opcionResolucion Como Entero
+	Definir comentarioSoporte Como Caracter
+	
+	Repetir  // Para que permanezca en submenu y salga al elegir la opcion
+		Limpiar Pantalla
+		Escribir "------------------------------------------------------"
+		Escribir "               Reclamos Pendientes                    "
+		Escribir "------------------------------------------------------"
+		Escribir ""
+		
+		hayPendientes <- Falso
+		
+		Si cantReclamos > 0 Entonces
+			Para i <- 0 Hasta cantReclamos - 1 Hacer  // recorre todo los reclamos
+				Si estadosReclamos[i] == "Pendiente" Entonces // si hay estado pendiente, lo muestra
+					hayPendientes <- Verdadero
+					Escribir "Reclamo N°: ", i + 1 
+					Escribir "Enviado por: ", tiposUsuarios[i]
+					Escribir "Estado: ", estadosReclamos[i]
+					Escribir "Título: ", titulosReclamos[i] 
+					Escribir "Usuario acusado: ", acusadosReclamos[i]
+					Escribir "Mensaje: ", mensajesReclamos[i]
+					Escribir "---------------------------------------------------------"
+				FinSi
+			FinPara
+		Finsi
+			
+		Si NO hayPendientes Entonces
+			Escribir "No hay incidencias pendientes en este momento."
+			Escribir ""
+			Escribir "Presione una tecla para volver al menú..."
+			Esperar Tecla
+			opcionMenu <- 2 // Forzamos la salida del submenu
+		SiNo
+			Escribir ""
+			Escribir "Seleccione la opcion deseada:"
+			Escribir "1. Gestionar reclamos"
+			Escribir "2. Volver al menu principal"
+			Escribir Sin Saltar "Ingrese una opción: "
+			Leer opcionMenu
+			
+			Si opcionMenu == 1 Entonces
+				Escribir ""
+				Escribir Sin Saltar "Ingrese el número de reclamo a gestionar: "
+				Leer numReclamo
+				
+				// Validación por si escribió mal el número o el reclamo no está pendiente
+				Si numReclamo >= 1 Y numReclamo <= cantReclamos Y estadosReclamos[numReclamo - 1] == "Pendiente" Entonces
+					 
+						Limpiar Pantalla
+						Escribir "----------------------------------------------------------"
+						Escribir "       GESTIÓN DE RESOLUCIÓN (Reclamo N° ", numReclamo, ")"
+						Escribir "----------------------------------------------------------"
+						Escribir Sin Saltar "Ingrese el comentario o resolución para este reclamo: "
+						Leer comentarioSoporte
+						
+						Si comentarioSoporte <> "" Entonces // distinto de "texto vacio"
+							respuestasReclamos[numReclamo - 1] <- comentarioSoporte
+							estadosReclamos[numReclamo - 1] <- "Validado"
+							Escribir ""
+							Escribir "¡Reclamo procesado y validado con éxito!"
+							Esperar 2.0 Segundos
+						SiNo
+							Escribir ""
+							Escribir "El comentario no puede estar vacío. Operación cancelada."
+							Esperar 2.0 Segundos
+						FinSi
+				SiNo
+					Escribir ""
+					Escribir "Número de reclamo inválido o inexistente."
+					Esperar 2.0 Segundos
+				FinSi  
+			FinSi
+		FinSi
+	Hasta Que opcionMenu == 2
+	Limpiar Pantalla
+FinSubAlgoritmo
+
+// ......................................................................................
+// MENU SOPORTE: 2) Gestionar Usuarios
+// ......................................................................................
+SubAlgoritmo gestionarEstadoUsuarios(estadosUsuariosSistema Por Referencia, nombresChoferes, nombresClientes)
+	Definir opcionTipoUsuario, opcionMenuAccion, numUsuario Como Entero
+	Definir salirGestion Como Logico
+	Definir tipoUsuario, nuevoEstado Como Caracter
+	
+	salirGestion <- Falso
+	
+	Repetir // mantiene al usuario en el submenu hasta que decida salir 
+		Limpiar Pantalla
+		Escribir "=========================================="
+		Escribir "            Gestion de Usuarios           "
+		Escribir "=========================================="
+		Escribir "1) Usuarios - Chofer"
+		Escribir "2) Usuarios - Cliente"
+		Escribir "3) Volver al menu principal"
+		Escribir ""
+		Escribir Sin Saltar "Seleccione el tipo de usuario a gestionar: "
+		Leer opcionTipoUsuario
+		
+		Segun opcionTipoUsuario Hacer
+			1:
+				tipoUsuario <- "Chofer"
+				Repetir
+					Limpiar Pantalla
+					Escribir "--------------------------------------------------------------------"
+					Escribir "                Listado de Usuarios (Chofer)"
+					Escribir "--------------------------------------------------------------------"
+					
+					Escribir "Usuario N° 1 | Nombre: ", nombresChoferes[0], " | Estado: ", estadosUsuariosSistema[0]
+					Escribir "Usuario N° 2 | Nombre: ", nombresChoferes[1], " | Estado: ", estadosUsuariosSistema[1]
+					Escribir "Usuario N° 3 | Nombre: ", nombresChoferes[2], " | Estado: ", estadosUsuariosSistema[2]
+					
+					Escribir "--------------------------------------------------------------------"
+					Escribir "1. Cambiar estado de usuario (Activar / Suspender)"
+					Escribir "2. Volver atras"
+					Escribir Sin Saltar "Ingrese una opcion: "
+					Leer opcionMenuAccion
+					
+					Segun opcionMenuAccion Hacer
+						1:
+							Escribir "--------------------------------------------------------------------"
+							Escribir Sin Saltar "Ingrese el N° de usuario a modificar: "
+							Leer numUsuario
+							
+							Segun numUsuario Hacer
+								1:
+									Si estadosUsuariosSistema[0] == "Activo" Entonces
+										estadosUsuariosSistema[0] <- "Suspendido"  // Lo cambia a suspendido si está activo
+										nuevoEstado <- "Suspendido"
+									SiNo
+										estadosUsuariosSistema[0] <- "Activo" // Lo cambia a activo si está suspendido
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								2:
+									Si estadosUsuariosSistema[1] == "Activo" Entonces
+										estadosUsuariosSistema[1] <- "Suspendido"  // Lo cambia a suspendido si está activo
+										nuevoEstado <- "Suspendido"  
+									SiNo
+										estadosUsuariosSistema[1] <- "Activo"  // Lo cambia a activo si está suspendido
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								3:
+									Si estadosUsuariosSistema[2] == "Activo" Entonces
+										estadosUsuariosSistema[2] <- "Suspendido"  // Lo cambia a suspendido si está activo
+										nuevoEstado <- "Suspendido"  
+									SiNo
+										estadosUsuariosSistema[2] <- "Activo"  // Lo cambia a activo si está suspendido
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								De Otro Modo:
+									Escribir ""
+									Escribir "Numero de usuario invalido."
+									Esperar 2.0 Segundos
+							FinSegun
+						2:
+							// Vuelve al menú anterior
+						De Otro Modo:
+							Escribir ""
+							Escribir "Opcion invalida. Intente nuevamente."
+							Esperar 2.0 Segundos
+					FinSegun
+				Hasta Que opcionMenuAccion == 2
+				
+			2:
+				tipoUsuario <- "Cliente"
+				Repetir
+					Limpiar Pantalla
+					Escribir "--------------------------------------------------------------------"
+					Escribir "                Listado de Usuarios (Cliente)"
+					Escribir "--------------------------------------------------------------------"
+					
+					// Mostramos la lista fija de clientes (posiciones 3, 4 y 5 del vector global)
+					Escribir "Usuario N° 1 | Nombre: ", nombresClientes[0], " | Estado: ", estadosUsuariosSistema[3]
+					Escribir "Usuario N° 2 | Nombre: ", nombresClientes[1], " | Estado: ", estadosUsuariosSistema[4]
+					Escribir "Usuario N° 3 | Nombre: ", nombresClientes[2], " | Estado: ", estadosUsuariosSistema[5]
+					
+					Escribir "--------------------------------------------------------------------"
+					Escribir "1. Cambiar estado de usuario (Activar / Suspender)"
+					Escribir "2. Volver atras"
+					Escribir Sin Saltar "Ingrese una opcion: "
+					Leer opcionMenuAccion
+					
+					Segun opcionMenuAccion Hacer
+						1:
+							Escribir "--------------------------------------------------------------------"
+							Escribir Sin Saltar "Ingrese el N° de usuario a modificar (1 a 3): "
+							Leer numUsuario
+							 
+							Segun numUsuario Hacer
+								1:
+									Si estadosUsuariosSistema[3] == "Activo" Entonces
+										estadosUsuariosSistema[3] <- "Suspendido"
+										nuevoEstado <- "Suspendido"
+									SiNo
+										estadosUsuariosSistema[3] <- "Activo"
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								2:
+									Si estadosUsuariosSistema[4] == "Activo" Entonces
+										estadosUsuariosSistema[4] <- "Suspendido"
+										nuevoEstado <- "Suspendido"
+									SiNo
+										estadosUsuariosSistema[4] <- "Activo"
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								3:
+									Si estadosUsuariosSistema[5] == "Activo" Entonces
+										estadosUsuariosSistema[5] <- "Suspendido"
+										nuevoEstado <- "Suspendido"
+									SiNo
+										estadosUsuariosSistema[5] <- "Activo"
+										nuevoEstado <- "Activo"
+									FinSi
+									Escribir ""
+									Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+									Esperar 2.0 Segundos
+								De Otro Modo:
+									Escribir ""
+									Escribir "Numero de usuario invalido."
+									Esperar 2.0 Segundos
+							FinSegun
+						2:
+							// Vuelve al menú anterior
+						De Otro Modo:
+							Escribir ""
+							Escribir "Opcion invalida. Intente nuevamente."
+							Esperar 2.0 Segundos
+					FinSegun
+				Hasta Que opcionMenuAccion == 2
+				
+			3:
+				salirGestion <- Verdadero
+			De Otro Modo:
+				Escribir ""
+				Escribir "Opcion invalida. Intente nuevamente."
+				Esperar 2.0 Segundos
+		FinSegun
+		
+	Hasta Que salirGestion
+	Limpiar Pantalla
+FinSubAlgoritmo
+
+
+// ......................................................................................
+// MENU SOPORTE: 3) Ver historial de reclamos
+// ......................................................................................
+
+SubAlgoritmo verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
+	Definir i Como Entero
+	Definir hayHistorial Como Logico
+	hayHistorial <- Falso
+	
+	Limpiar Pantalla
+	Escribir "------------------------------------------------------"
+	Escribir "                Historial de Reclamos                 "
+	Escribir "------------------------------------------------------"
+	Escribir ""
+	
+	Si cantReclamos > 0 Entonces
+		Para i <- 0 Hasta cantReclamos - 1 Hacer
+			hayHistorial <- Verdadero
+			Escribir "Reclamo N°: ", i + 1 
+			Escribir "Título: ", titulosReclamos[i] 
+			Escribir "Enviado por: ", tiposUsuarios[i]
+			Escribir "Usuario acusado: ", acusadosReclamos[i]
+			Escribir "Mensaje original: ", mensajesReclamos[i]
+			Escribir "Estado actual: ", estadosReclamos[i]
+			
+			// Si ya fue gestionado (Validado), mostramos la respuesta 
+			Si estadosReclamos[i] == "Validado" Entonces
+				Escribir "Resolución - Comentario: ", respuestasReclamos[i]
+			SiNo
+				Escribir "Resolución - Comentario: >> Pendiente de resolución <<"
+			FinSi
+			
+			Escribir "---------------------------------------------------------"
+		FinPara
+	FinSi
+		
+		Si NO hayHistorial Entonces
+			Escribir "No hay registros en el historial de reclamos."
+		FinSi
+		
+		Escribir ""
+		Escribir "Presione una tecla para volver al menú..."
+		Esperar Tecla
+		Limpiar Pantalla
+FinSubAlgoritmo
 // ......................................................................................
 //                         FUNCIONES y PROCESOS DEL USUARIO CHOFER 
 // ......................................................................................
@@ -924,11 +1329,12 @@ Funcion opcionChofer <- opcionServicioChofer
 	Hasta Que opcionChofer >= 1 y opcionChofer <=2 
 FinFuncion
 
-
+// Calcula el nivel de urgencia/prioridad de una solicitud de auxilio con preguntas y sistema de puntos 
 Funcion prioridad <- calcularPrioridad
 	Definir opcionVia, opcionZonaPeligrosa, opcionObstruyeCirculacion, opcionTotalmenteDetenido, puntaje,prioridad Como Entero
 	puntaje =0;
 	
+	// Pregunta 1: Tipo de vía
 	mostrarSolicitudAuxilio;
 	Repetir
 		Escribir "¿En que tipo de via se encuentra? ";
@@ -946,12 +1352,14 @@ Funcion prioridad <- calcularPrioridad
 		
 	Hasta Que opcionVia >= 1 y opcionVia <= 3
 	
+	// Asigna puntos según el tipo de vía  
 	segun opcionVia Hacer
-		1:puntaje = puntaje + 3
-		2:puntaje = puntaje + 1
-		3:puntaje = puntaje + 0
+		1:puntaje = puntaje + 3 // Autopista
+		2:puntaje = puntaje + 1 // Ruta
+		3:puntaje = puntaje + 0 // Calle
 	FinSegun
 	
+	// Pregunta 2: Zona peligrosa
 	Repetir
 		mostrarSolicitudAuxilio;
 		Escribir "¿Se encuentra en una zona peligrosa? ";
@@ -969,9 +1377,10 @@ Funcion prioridad <- calcularPrioridad
 	Hasta Que opcionZonaPeligrosa >= 1 y opcionZonaPeligrosa <= 2
 	
 	si opcionZonaPeligrosa=1 Entonces
-		puntaje = puntaje + 3
+		puntaje = puntaje + 3 // Se suma puntos si el usuario responde si
 	FinSi
 	
+	// Pregunta 3: Obstrucción de circulación
 	Repetir
 		mostrarSolicitudAuxilio;
 		Escribir "¿Se encuentra obstruyendo la circulacion? ";
@@ -989,9 +1398,10 @@ Funcion prioridad <- calcularPrioridad
 	Hasta Que opcionObstruyeCirculacion >= 1 y opcionObstruyeCirculacion <= 2
 	
 	Si opcionObstruyeCirculacion=1 Entonces
-		puntaje = puntaje + 2
+		puntaje = puntaje + 2 // Se suma puntos si el usuario responde si
 	FinSi
 	
+	// Pregunta 4: Vehículo totalmente detenido
 	Repetir
 		mostrarSolicitudAuxilio;
 		Escribir "¿Su vehiculo esta totalmente detenido? ";
@@ -1009,11 +1419,14 @@ Funcion prioridad <- calcularPrioridad
 	Hasta Que opcionTotalmenteDetenido >= 1 y opcionTotalmenteDetenido <= 2
 	
 	Si opcionTotalmenteDetenido=1 Entonces
-		puntaje = puntaje + 2
+		puntaje = puntaje + 2  // Se suma puntos si el usuario responde si
 	FinSi
+	
+	// El puntaje acumulado se asigna a la variable de retorno
 	prioridad = puntaje
 FinFuncion
-
+ 
+// Convierte el puntaje numérico de la solicitud en una categoría de texto   
 Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
 	Definir nombrePrioridad Como Caracter
 	si prioridad <= 2 Entonces
@@ -1027,14 +1440,22 @@ Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
 	FinSi
 FinFuncion
 
+
+
+// Busca entre todas las solicitudes la más urgente que coincida con la localidad del chofer que ha iniciado sesión.
 Funcion solicitudEncontrada<- buscarSolicitudPendiente(estadosSolicitudes, solicitudUbicaciones, localidadesChoferes,puntajesPrioridad, cantSolicitudes,choferLogueado)
 	definir solicitudEncontrada, mayorPuntaje, i Como Entero
 	solicitudEncontrada=-1
 	mayorPuntaje=-1 
 	i=0
+	
+	// Recorre todas las solicitudes cargadas en el sistema
 	Para i=0 Hasta cantSolicitudes-1 Hacer
+		// Filtra solo las que están pendientes
 		Si estadosSolicitudes[i]= "Pendiente" Entonces
+			// Valida que la ubicación de la solicitud coincida con la del chofer
 			Si localidadesChoferes[choferLogueado] = solicitudUbicaciones[i] Entonces
+				// Busca la que tenga el mayor puntaje de prioridad
 				Si puntajesPrioridad[i] > mayorPuntaje Entonces
 					mayorPuntaje= puntajesPrioridad[i]
 					solicitudEncontrada = i
