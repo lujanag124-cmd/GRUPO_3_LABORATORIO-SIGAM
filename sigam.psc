@@ -7,15 +7,15 @@ Algoritmo SIGAM
 	Definir solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones Como Caracter;
 	Definir nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosSolicitudes  Como Caracter;
 	Definir opcionUsuario, choferesAsignados, choferEncontrado, opcionPost, choferLogueado, clienteLogueado, adminLogueado, soporteLogueado, opcionChofer Como Entero;
-	Definir loginActivo, solicitudConfirmada Como Logico;
+	Definir loginActivo, solicitudConfirmada,tieneSolicitudActiva Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
-	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes Como Entero;  
+	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes,i Como Entero;  
 	//Soporte 
 	Definir titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos Como Caracter;
 	Definir cantReclamos Como Entero;
 	Definir estadosUsuariosSistema Como Caracter;  
 	Definir nombresClientes Como Caracter;
-	  
+	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
 	Dimension solicitudTipoVehiculos[10];
@@ -98,7 +98,7 @@ Algoritmo SIGAM
 				"Chofer" :
 					menuChofer(opcionUsuario)
 					Segun opcionUsuario Hacer
-						1:estadoActualChofer(choferLogueado, estadosChoferes, estadosDisponibles)
+						1:estadoActualChofer(choferLogueado, estadosChoferes, estadosDisponibles,estadosSolicitudes, solicitudUbicaciones, localidadesChoferes,puntajesPrioridad, cantSolicitudes,nombresChoferes,choferesAsignados,estadosServicio)
 						2:si cantSolicitudes=0 Entonces
 							Limpiar Pantalla
 							Escribir "Aun no tiene servicio asignado"
@@ -117,47 +117,58 @@ Algoritmo SIGAM
 									Limpiar Pantalla
 							FinSegun
 						FinSi
-						3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles,solicitudUbicaciones, localidadesChoferes,puntajesPrioridad,nombresChoferes)
-						4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Chofer")
-						5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
-							Escribir " "
-							Escribir "Presione una tecla para volver al menu..."
-							Esperar Tecla
-							Limpiar Pantalla
-						6: loginActivo <- Falso	
-						De Otro Modo:
-							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
-							Esperar 2.5 Segundos
-							Limpiar Pantalla
-					FinSegun
-				"Cliente" :
-					menuCliente(opcionUsuario)
-					Segun opcionUsuario Hacer
-						1:si cantSolicitudes < 10 Entonces
-							solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad,clientesSolicitudes,clienteLogueado)
-							
-							mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
-							
-							si solicitudConfirmada= Verdadero Entonces
-								choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
-								motorDeAsignacion(choferEncontrado,cantSolicitudes-1,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
-								opcionPost <- opcionPostSolicitud
-								Segun opcionPost Hacer
-									1: si cantSolicitudes>0 Entonces	
-											Limpiar Pantalla
-											mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio, clientesSolicitudes, clienteLogueado)
-										SiNo
-											Escribir "No hay solicitudes registradas"
-										FinSi
-									2:	
-										Escribir "Volviendo al menu principal..."
-										Esperar 1.2 segundos
-								FinSegun
+					3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles,solicitudUbicaciones, localidadesChoferes,puntajesPrioridad,nombresChoferes)
+					4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Chofer")
+					5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
+						Escribir " "
+						Escribir "Presione una tecla para volver al menu..."
+						Esperar Tecla
+						Limpiar Pantalla
+					6: loginActivo <- Falso	
+					De Otro Modo:
+						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
+						Esperar 2.5 Segundos
+						Limpiar Pantalla
+				FinSegun
+			"Cliente" :
+				menuCliente(opcionUsuario)
+				Segun opcionUsuario Hacer
+					1: //Valida que si el usuario logueado ya tiene una solicitud realizada//
+						tieneSolicitudActiva = Falso
+						Para i<-0 Hasta cantSolicitudes-1 Con Paso 1 Hacer
+							si clientesSolicitudes[i] = clienteLogueado  Entonces
+								tieneSolicitudActiva = Verdadero
 							FinSi
+						Fin Para
+						//Valida que la solicitud no haya sido superada//
+						si cantSolicitudes >= 10 Entonces
+							Escribir "Se alcanzo el limite de Solicitudes"
 						SiNo
-							Escribir "No se pueden registrar mas solicitudes. El limite diario es 10 solicitudes."
+							si tieneSolicitudActiva Entonces
+								Escribir "Usted ya tiene una solicitud en curso."
+							sino 
+								solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad,clientesSolicitudes,clienteLogueado)
+								
+								mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
+								
+								si solicitudConfirmada= Verdadero Entonces
+									choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
+									motorDeAsignacion(choferEncontrado,cantSolicitudes-1,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
+									opcionPost <- opcionPostSolicitud
+									Segun opcionPost Hacer
+										1: si cantSolicitudes>0 Entonces	
+												Limpiar Pantalla
+												mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio, clientesSolicitudes, clienteLogueado)
+											SiNo
+												Escribir "No hay solicitudes registradas"
+											FinSi
+										2:	
+											Escribir "Volviendo al menu principal..."
+											Esperar 1.2 segundos
+									FinSegun
+								FinSi
+							FinSi
 						FinSi
-						
 						Esperar 1 Segundos
 						Limpiar Pantalla
 					2:	Limpiar Pantalla
@@ -178,42 +189,42 @@ Algoritmo SIGAM
 						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
 						Esperar 2.5 Segundos 
 						Limpiar Pantalla
-					FinSegun
-				"Admin" :
-					menuAdmin(opcionUsuario)
-					Segun opcionUsuario Hacer
-						1:
-						2:
-						3:
-						4:
-						5:
-						6:loginActivo <- Falso
-						De Otro Modo:
-							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
-							Esperar 2.5 Segundos
-							Limpiar Pantalla
-					FinSegun
-				"Soporte" :
-					menuSoporte(opcionUsuario)
-					Segun opcionUsuario Hacer
-						1:verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
-						2:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
-						3:verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
-						4:loginActivo <- Falso
-						De Otro Modo:
-							Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
-							Esperar 2.5 Segundos
-							Limpiar Pantalla
-					FinSegun
-			FinSegun
-		Fin Mientras	 
-			escribir "Cerrando sesion..."
-			Esperar 1.5 segundos
-			Limpiar Pantalla
-			
-			// Mensaje de bienvenida
-			mostrarBienvenida;
-	FinMientras
+				FinSegun
+			"Admin" :
+				menuAdmin(opcionUsuario)
+				Segun opcionUsuario Hacer
+					1:
+					2:
+					3:
+					4:
+					5:
+					6:loginActivo <- Falso
+					De Otro Modo:
+						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
+						Esperar 2.5 Segundos
+						Limpiar Pantalla
+				FinSegun
+			"Soporte" :
+				menuSoporte(opcionUsuario)
+				Segun opcionUsuario Hacer
+					1:verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
+					2:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
+					3:verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
+					4:loginActivo <- Falso
+					De Otro Modo:
+						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
+						Esperar 2.5 Segundos
+						Limpiar Pantalla
+				FinSegun
+		FinSegun
+	Fin Mientras	 
+	escribir "Cerrando sesion..."
+	Esperar 1.5 segundos
+	Limpiar Pantalla
+	
+	// Mensaje de bienvenida
+	mostrarBienvenida;
+FinMientras
 
 FinAlgoritmo
 
@@ -224,7 +235,7 @@ SubAlgoritmo mostrarBienvenida
 	Escribir "Sistema de Gestion y Asignacion de Auxilio Mecanico "
 	Escribir "...................................................."
 FinSubAlgoritmo
- 
+
 // Login >> usuario ingresa sus credenciales
 SubAlgoritmo  inicioSesion(user Por Referencia, pasw Por Referencia)
 	Escribir "Ingrese su usuario:";
@@ -266,7 +277,7 @@ Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, cli
 	// finaliza cuando encuentra la credencial correcta
 	Mientras i < 9 Y tipoUsuario == "Incorrecto" Hacer
 		Si usu == usuarios[i] Y psw == claves[i] Entonces
-			 
+			
 			Si estadosUsuariosSistema[i] == "Activo" Entonces
 				tipoUsuario <- roles[i]
 				
@@ -379,9 +390,9 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	FinPara
 	
 	// Ubicaciones
-	ubicaciones[0] <- "Merlo" // chofer1
-	ubicaciones[1] <- "Ituzaingo" // chofer2
-	ubicaciones[2] <- "Moron" // chofer3
+	ubicaciones[0] <- "Merlo" 	   // chofer1
+	ubicaciones[1] <- "Ituzaingo"   // chofer2
+	ubicaciones[2] <- "Moron" 	   // chofer3
 	
 	// Tipos de Vehiculos
 	tipoVehiculos[0] <- "Moto"
@@ -397,18 +408,18 @@ SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Re
 	situaciones[2] <- "Accidente/Choque "
 	
 	// Datos de Choferes
-	nombresChoferes[0] <- "Ruben Diaz" // chofer1
+	nombresChoferes[0] <- "Ruben Diaz" 		 // chofer1
 	nombresChoferes[1] <- "Carlos Pellegrini" // chofer2
-	nombresChoferes[2] <- "Tomas Perez" // chofer3
+	nombresChoferes[2] <- "Tomas Perez" 		 // chofer3
 	
 	// Nombres de Clientes
 	nombresClientes[0] <- "Lucia Gomez"   // cliente1 (índice 3 en sistema)
 	nombresClientes[1] <- "Mateo Rossi"   // cliente2 (índice 4 en sistema)
 	nombresClientes[2] <- "Sofia Benitez" // cliente3 (índice 5 en sistema)
 	
-	estadosChoferes[0] <- "Disponible"
-	estadosChoferes[1] <- "Ocupado"
-	estadosChoferes[2] <- "Disponible"
+	estadosChoferes[0] <- "No disponible"
+	estadosChoferes[1] <- "No disponible"
+	estadosChoferes[2] <- "No disponible"
 	
 	// Localicades
 	localidadesChoferes[0] <- "Ituzaingo"
@@ -651,8 +662,8 @@ Funcion opcionPost <- opcionPostSolicitud
 		FinSi
 	Hasta Que opcionPost >= 1 y opcionPost <=2 
 FinFuncion
- 
- 
+
+
 //  Detalle de servicio para > SUBMENU CLIENTE: 1. Consultar detalles del servicio  
 SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicios,clientesSolicitudes, clienteLogueado)
 	Limpiar Pantalla
@@ -685,7 +696,7 @@ SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehic
 	Si encontrada= falso Entonces
 		Escribir "No tiene servicios activos"
 	FinSi
-
+	
 	Escribir "Presione una tecla para volver al menu..."
 	Esperar Tecla
 	Limpiar Pantalla
@@ -718,7 +729,7 @@ SubAlgoritmo mostrarServicioChofer(cantSolicitudes,choferesAsignados,choferLogue
 		Escribir "Aun no tiene servicio asignado"
 	FinSi
 FinSubAlgoritmo
- 
+
 
 // CHOFER: iniciar viaje y cambiar el estado
 SubAlgoritmo iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes Por Referencia,estadosServicio)
@@ -753,7 +764,7 @@ SubAlgoritmo iniciarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estad
 	Limpiar Pantalla
 FinSubAlgoritmo
 
- 
+
 // CHOFER: finalizar viaje y cambiar el estado
 SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados Por Referencia, choferLogueado, estadosSolicitudes Por Referencia, estadosServicio, estadosChoferes Por Referencia, estadosDisponibles,solicitudUbicaciones, localidadesChoferes, puntajesPrioridad,nombresChoferes)
 	Definir i, solicitudEncontrada Como Entero
@@ -762,7 +773,7 @@ SubAlgoritmo finalizarViaje(cantSolicitudes, choferesAsignados Por Referencia, c
 	tieneViajeActivo <- Falso
 	viajeFinalizado <- Falso
 	viajePendiente <- Falso
-	 
+	
 	Si cantSolicitudes > 0 Entonces
 		Para i = 0 Hasta cantSolicitudes-1 Hacer
 			// valida si la solicitud es del usuario que inicio sesion
@@ -819,7 +830,7 @@ FinSubAlgoritmo
 // ..............................................................................................
 //                                 FIN para el proceso de solicitudes de auxilio
 // ..............................................................................................
- 
+
 // ......................................................................................
 //                  CHOFER Y CLIENTE >> MENÚ - OPCION 4: Contactar a soporte
 // ......................................................................................
@@ -827,9 +838,9 @@ SubAlgoritmo contactarSoporte(titulosReclamos Por Referencia, acusadosReclamos P
 	Definir tituloReclamo, acusadoReclamo, contenidoMensaje Como Caracter
 	Definir limiteCaracteres Como Entero
     limiteCaracteres <- 20 // solo de prueba, se cambia al que querramos 
-	 
-		// 1. Ingresar Título del reclamo 
-		Repetir
+	
+	// 1. Ingresar Título del reclamo 
+	Repetir
 		Limpiar Pantalla
         Escribir "=========================================================================================="
         Escribir "                                Contactar a Soporte                                       "
@@ -838,16 +849,16 @@ SubAlgoritmo contactarSoporte(titulosReclamos Por Referencia, acusadosReclamos P
 		Escribir "             Por favor, complete los campos - Presione ENTER para continuar)"
 		Escribir ".........................................................................................."
 		
-			Escribir "Ingrese el título del reclamo: "  Sin Saltar 
-			Leer tituloReclamo
-			Si tituloReclamo == "" Entonces
-				Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
-				Esperar 3.0 Segundos
-			FinSi
-		Hasta Que tituloReclamo <> "" // distinto de "texto vacio"
-		
-		// 2. Ingresar el nombre del usuario acusado 
-		Repetir
+		Escribir "Ingrese el título del reclamo: "  Sin Saltar 
+		Leer tituloReclamo
+		Si tituloReclamo == "" Entonces
+			Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+		FinSi
+	Hasta Que tituloReclamo <> "" // distinto de "texto vacio"
+	
+	// 2. Ingresar el nombre del usuario acusado 
+	Repetir
 		Limpiar Pantalla
 		Escribir "=========================================================================================="
 		Escribir "                                Contactar a Soporte                                       "
@@ -856,27 +867,27 @@ SubAlgoritmo contactarSoporte(titulosReclamos Por Referencia, acusadosReclamos P
 		Escribir "             Por favor, complete los campos - Presione ENTER para continuar)"
 		Escribir ".........................................................................................."
 		Escribir "Título del reclamo: ", tituloReclamo 
-			Escribir "Ingrese el nombre completo del usuario acusado: "  Sin Saltar
-			Leer acusadoReclamo
-			Si acusadoReclamo == "" Entonces
-				Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
-				Esperar 3.0 Segundos
-			FinSi
-		Hasta Que acusadoReclamo <> "" // distinto de "texto vacio"
-		
-		// 3. Ingresar y validar el contenido/mensaje
-		Repetir 
-			Limpiar Pantalla
-			Escribir "=========================================================================================="
-			Escribir "                                Contactar a Soporte                                       "
-			Escribir "=========================================================================================="
-			Escribir "............................................................................................................."
-			Escribir "Detalle su reclamo o consulta. (Maximo ", limiteCaracteres, " caracteres - Presione ENTER para enviar)"
-			Escribir "............................................................................................................."
-			Escribir "Título del reclamo: ", tituloReclamo
-			Escribir "Usuario acusado: ", acusadoReclamo
-			Escribir Sin Saltar "Contenido del mensaje: "
-			Leer contenidoMensaje; 
+		Escribir "Ingrese el nombre completo del usuario acusado: "  Sin Saltar
+		Leer acusadoReclamo
+		Si acusadoReclamo == "" Entonces
+			Escribir "La opcion no puede estar incompleta. Por favor, intente nuevamente."
+			Esperar 3.0 Segundos
+		FinSi
+	Hasta Que acusadoReclamo <> "" // distinto de "texto vacio"
+	
+	// 3. Ingresar y validar el contenido/mensaje
+	Repetir 
+		Limpiar Pantalla
+		Escribir "=========================================================================================="
+		Escribir "                                Contactar a Soporte                                       "
+		Escribir "=========================================================================================="
+		Escribir "............................................................................................................."
+		Escribir "Detalle su reclamo o consulta. (Maximo ", limiteCaracteres, " caracteres - Presione ENTER para enviar)"
+		Escribir "............................................................................................................."
+		Escribir "Título del reclamo: ", tituloReclamo
+		Escribir "Usuario acusado: ", acusadoReclamo
+		Escribir Sin Saltar "Contenido del mensaje: "
+		Leer contenidoMensaje; 
         
         Si NO validarMensajeSoporte(contenidoMensaje, limiteCaracteres) Entonces
             Escribir ""
@@ -957,7 +968,7 @@ SubAlgoritmo verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesRe
 				FinSi
 			FinPara
 		Finsi
-			
+		
 		Si NO hayPendientes Entonces
 			Escribir "No hay incidencias pendientes en este momento."
 			Escribir ""
@@ -979,25 +990,25 @@ SubAlgoritmo verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesRe
 				
 				// Validación por si escribió mal el número o el reclamo no está pendiente
 				Si numReclamo >= 1 Y numReclamo <= cantReclamos Y estadosReclamos[numReclamo - 1] == "Pendiente" Entonces
-					 
-						Limpiar Pantalla
-						Escribir "----------------------------------------------------------"
-						Escribir "       GESTIÓN DE RESOLUCIÓN (Reclamo N° ", numReclamo, ")"
-						Escribir "----------------------------------------------------------"
-						Escribir Sin Saltar "Ingrese el comentario o resolución para este reclamo: "
-						Leer comentarioSoporte
-						
-						Si comentarioSoporte <> "" Entonces // distinto de "texto vacio"
-							respuestasReclamos[numReclamo - 1] <- comentarioSoporte
-							estadosReclamos[numReclamo - 1] <- "Validado"
-							Escribir ""
-							Escribir "¡Reclamo procesado y validado con éxito!"
-							Esperar 2.0 Segundos
-						SiNo
-							Escribir ""
-							Escribir "El comentario no puede estar vacío. Operación cancelada."
-							Esperar 2.0 Segundos
-						FinSi
+					
+					Limpiar Pantalla
+					Escribir "----------------------------------------------------------"
+					Escribir "       GESTIÓN DE RESOLUCIÓN (Reclamo N° ", numReclamo, ")"
+					Escribir "----------------------------------------------------------"
+					Escribir Sin Saltar "Ingrese el comentario o resolución para este reclamo: "
+					Leer comentarioSoporte
+					
+					Si comentarioSoporte <> "" Entonces // distinto de "texto vacio"
+						respuestasReclamos[numReclamo - 1] <- comentarioSoporte
+						estadosReclamos[numReclamo - 1] <- "Validado"
+						Escribir ""
+						Escribir "¡Reclamo procesado y validado con éxito!"
+						Esperar 2.0 Segundos
+					SiNo
+						Escribir ""
+						Escribir "El comentario no puede estar vacío. Operación cancelada."
+						Esperar 2.0 Segundos
+					FinSi
 				SiNo
 					Escribir ""
 					Escribir "Número de reclamo inválido o inexistente."
@@ -1128,7 +1139,7 @@ SubAlgoritmo gestionarEstadoUsuarios(estadosUsuariosSistema Por Referencia, nomb
 							Escribir "--------------------------------------------------------------------"
 							Escribir Sin Saltar "Ingrese el N° de usuario a modificar (1 a 3): "
 							Leer numUsuario
-							 
+							
 							Segun numUsuario Hacer
 								1:
 									Si estadosUsuariosSistema[3] == "Activo" Entonces
@@ -1225,23 +1236,23 @@ SubAlgoritmo verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesRec
 			Escribir "---------------------------------------------------------"
 		FinPara
 	FinSi
-		
-		Si NO hayHistorial Entonces
-			Escribir "No hay registros en el historial de reclamos."
-		FinSi
-		
-		Escribir ""
-		Escribir "Presione una tecla para volver al menú..."
-		Esperar Tecla
-		Limpiar Pantalla
+	
+	Si NO hayHistorial Entonces
+		Escribir "No hay registros en el historial de reclamos."
+	FinSi
+	
+	Escribir ""
+	Escribir "Presione una tecla para volver al menú..."
+	Esperar Tecla
+	Limpiar Pantalla
 FinSubAlgoritmo
 // ......................................................................................
 //                         FUNCIONES y PROCESOS DEL USUARIO CHOFER 
 // ......................................................................................
- 
+
 // MENU: 1) Estado actual
-SubAlgoritmo estadoActualChofer(choferLogueado, estadosChoferes Por Referencia, estadosDisponibles)
-    Definir opcionEstado, opcionCambiarEstado Como Entero
+SubAlgoritmo estadoActualChofer(choferLogueado, estadosChoferes Por Referencia, estadosDisponibles,estadosSolicitudes Por Referencia, solicitudUbicaciones, localidadesChoferes,puntajesPrioridad, cantSolicitudes,nombresChoferes,choferesAsignados Por Referencia,estadosServicio)
+    Definir opcionEstado, opcionCambiarEstado,indicePendiente Como Entero
     
     Repetir
         Limpiar Pantalla
@@ -1298,8 +1309,15 @@ SubAlgoritmo estadoActualChofer(choferLogueado, estadosChoferes Por Referencia, 
             1:
                 estadosChoferes[choferLogueado] <- estadosDisponibles[0]
                 Escribir "El estado ha sido cambiado. Su estado actual es: Disponible."
+				//LLama a la funcion para buscar una solicitud al cambiar de estado y la asigna a la variable //
+				indicePendiente = buscarSolicitudPendiente(estadosSolicitudes, solicitudUbicaciones, localidadesChoferes, puntajesPrioridad, cantSolicitudes, choferLogueado)
+				//al ver que hay una solicitud pendiente llama al motor de busqueda//
+				si indicePendiente <> -1 Entonces
+					//choferLogueado identifica al chofer e indicePendiente identifica la solicitud.//
+					motorDeAsignacion(choferLogueado,indicePendiente,nombresChoferes,choferesAsignados ,estadosChoferes ,cantSolicitudes, estadosSolicitudes, estadosServicio)
+				FinSi
+				Esperar Tecla
                 Esperar 2.0 Segundos
-                
             2:
                 estadosChoferes[choferLogueado] <- estadosDisponibles[2]
                 Escribir "El estado ha sido cambiado. Su estado actual es: No disponible."
@@ -1425,7 +1443,7 @@ Funcion prioridad <- calcularPrioridad
 	// El puntaje acumulado se asigna a la variable de retorno
 	prioridad = puntaje
 FinFuncion
- 
+
 // Convierte el puntaje numérico de la solicitud en una categoría de texto   
 Funcion nombrePrioridad<- obtenerPrioridad(prioridad)
 	Definir nombrePrioridad Como Caracter
@@ -1464,4 +1482,3 @@ Funcion solicitudEncontrada<- buscarSolicitudPendiente(estadosSolicitudes, solic
 		FinSi
 	FinPara
 FinFuncion
-
