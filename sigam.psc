@@ -16,6 +16,9 @@ Algoritmo SIGAM
 	Definir estadosUsuariosSistema Como Caracter;  
 	Definir nombresClientes Como Caracter;
 	
+	//Admin
+	Definir estadosLocalidades Como Caracter;
+	
 	//Estos vectores determinan la cantidad total de solicitudes, el valor es aleatorio. 
 	Dimension solicitudUbicaciones[10];
 	Dimension solicitudTipoVehiculos[10];
@@ -44,9 +47,10 @@ Algoritmo SIGAM
 	Dimension respuestasReclamos[10];
 	Dimension estadosUsuariosSistema[9] 
 	Dimension nombresClientes[3];
+	Dimension estadosLocalidades[3];
 	
 	//Datos hardcodeados para los vectores
-	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosUsuariosSistema, nombresClientes)
+	cargarDatosSistema(ubicaciones, tipoVehiculos, situaciones, nombresChoferes, usuariosChoferes, clavesChoferes, estadosChoferes, tiposGrua, localidadesChoferes, estadosDisponibles, estadosServicio, estadosUsuariosSistema, nombresClientes, estadosLocalidades)
 	
 	cantCanceladas = 0;
 	cantSolicitudes = 0;
@@ -119,12 +123,7 @@ Algoritmo SIGAM
 						FinSi
 					3:finalizarViaje(cantSolicitudes,choferesAsignados,choferLogueado,estadosSolicitudes,estadosServicio,estadosChoferes,estadosDisponibles,solicitudUbicaciones, localidadesChoferes,puntajesPrioridad,nombresChoferes)
 					4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Chofer")
-					5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
-						Escribir " "
-						Escribir "Presione una tecla para volver al menu..."
-						Esperar Tecla
-						Limpiar Pantalla
-					6: loginActivo <- Falso	
+					5: loginActivo <- Falso	
 					De Otro Modo:
 						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
 						Esperar 2.5 Segundos
@@ -173,18 +172,8 @@ Algoritmo SIGAM
 						Limpiar Pantalla
 					2:	Limpiar Pantalla
 						mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehiculos,solicitudUbicaciones,solicitudSituaciones,estadosSolicitudes, choferesAsignados, nombresChoferes,estadosServicio, clientesSolicitudes, clienteLogueado)
-					3:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
-						Escribir " "
-						Escribir "Presione una tecla para volver al menu..."
-						Esperar Tecla
-						Limpiar Pantalla
-					4:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Cliente")
-					5:Escribir "Opción temporalmente fuera de servicio. Disculpe las molestias."
-						Escribir " "
-						Escribir "Presione una tecla para volver al menu..."
-						Esperar Tecla
-						Limpiar Pantalla
-					6:loginActivo <- Falso
+					3:contactarSoporte(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, cantReclamos, "Cliente")
+					4:loginActivo <- Falso
 					De Otro Modo:
 						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
 						Esperar 2.5 Segundos 
@@ -193,12 +182,9 @@ Algoritmo SIGAM
 			"Admin" :
 				menuAdmin(opcionUsuario)
 				Segun opcionUsuario Hacer
-					1:
-					2:
-					3:
-					4:
-					5:
-					6:loginActivo <- Falso
+					1:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
+					2:gestionarLocalidadesSistema(ubicaciones, estadosLocalidades)
+					3:loginActivo <- Falso
 					De Otro Modo:
 						Escribir "La opcion ingresada no es valida. Por favor, intente nuevamente"
 						Esperar 2.5 Segundos
@@ -246,7 +232,7 @@ FinSubAlgoritmo
 
 
 //Función que valida el acceso de las credenciales hardcodeadas y devuelve el valor del menú
-Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, clienteLogueado Por Referencia, adminLogeado Por Referencia, soporteLogueado Por Referencia, estadosUsuariosSistema Por Referencia)   
+Funcion tipoUsuario <- validaLogin (usu, psw, choferLogueado Por Referencia, clienteLogueado Por Referencia, adminLogueado Por Referencia, soporteLogueado Por Referencia, estadosUsuariosSistema Por Referencia)   
 	Definir i Como Entero
 	Definir usuarios, claves, roles, tipoUsuario Como Caracter; 
 	
@@ -316,10 +302,8 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "1) Solicitar auxilio";
 	Escribir "2) Consultar estado del viaje";
-	Escribir "3) Calificar servicio";
-	Escribir "4) Contactar a soporte";
-	Escribir "5) Ver historial";
-	Escribir "6) Cerrar sesion";
+	Escribir "3) Contactar a soporte";
+	Escribir "4) Cerrar sesion";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
@@ -335,8 +319,7 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "2) Servicio asignado";
 	Escribir "3) Finalizar viaje";
 	Escribir "4) Contactar a soporte";
-	Escribir "5) Historial de ganancias";
-	Escribir "6) Cerrar sesion";
+	Escribir "5) Cerrar sesion";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
@@ -349,12 +332,9 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "=========================================="
 	Escribir "            Menu Administrador            "
 	Escribir "=========================================="
-	Escribir "1) Gestionar choferes";
-	Escribir "2) Gestionar gruas";
-	Escribir "3) Gestionar localidades";
-	Escribir "4) Configurar distancias";
-	Escribir "5) Consultar estadisticas";
-	Escribir "6) Cerrar sesion";
+	Escribir "1) Gestionar usuarios";
+	Escribir "2) Gestionar localidades"; 
+	Escribir "3) Cerrar sesion";
 	Escribir "";
 	Escribir Sin Saltar "Ingrese una opcion: ";
 	Leer opcionUsuario;
@@ -382,13 +362,16 @@ FinSubAlgoritmo
 // ..............................................................................................
 
 // Informacion hardcodeada, relevante para el proceso 
-SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Referencia, situaciones Por Referencia, nombresChoferes Por Referencia, usuariosChoferes Por Referencia, clavesChoferes Por Referencia, estadosChoferes Por Referencia, tiposGrua Por Referencia, localidadesChoferes Por Referencia, estadosDisponibles Por Referencia, estadosServicio Por Referencia, estadosUsuariosSistema Por Referencia, nombresClientes Por Referencia)
+SubAlgoritmo cargarDatosSistema(ubicaciones Por Referencia, tipoVehiculos Por Referencia, situaciones Por Referencia, nombresChoferes Por Referencia, usuariosChoferes Por Referencia, clavesChoferes Por Referencia, estadosChoferes Por Referencia, tiposGrua Por Referencia, localidadesChoferes Por Referencia, estadosDisponibles Por Referencia, estadosServicio Por Referencia, estadosUsuariosSistema Por Referencia, nombresClientes Por Referencia, estadosLocalidades Por Referencia)
 	Definir i Como Entero;
 	// inician todos los usuarios como "Activo" por default, esto ayuda al usuario soporte despues para activar/desactivar usuarios
 	Para i <- 0 Hasta 8 Hacer
 		estadosUsuariosSistema[i] <- "Activo"
 	FinPara
 	
+	Para i <- 0 Hasta 2 Hacer
+		estadosLocalidades[i] <- "Activa"
+	FinPara
 	// Ubicaciones
 	ubicaciones[0] <- "Merlo" 	   // chofer1
 	ubicaciones[1] <- "Ituzaingo"   // chofer2
@@ -1021,7 +1004,7 @@ SubAlgoritmo verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesRe
 FinSubAlgoritmo
 
 // ......................................................................................
-// MENU SOPORTE: 2) Gestionar Usuarios
+// MENU SOPORTE: 2) Gestionar Usuarios  || MENU ADMIN: 1) Gestionar usuarios
 // ......................................................................................
 SubAlgoritmo gestionarEstadoUsuarios(estadosUsuariosSistema Por Referencia, nombresChoferes, nombresClientes)
 	Definir opcionTipoUsuario, opcionMenuAccion, numUsuario Como Entero
@@ -1246,6 +1229,94 @@ SubAlgoritmo verHistorialReclamos(titulosReclamos, acusadosReclamos, mensajesRec
 	Esperar Tecla
 	Limpiar Pantalla
 FinSubAlgoritmo
+
+// ......................................................................................
+//                         FUNCIONES y PROCESOS DEL USUARIO ADMIN
+// ......................................................................................   
+// MENU ADMIN: 2) Gestionar localidades
+// ......................................................................................
+ 
+SubAlgoritmo gestionarLocalidadesSistema(ubicaciones Por Referencia, estadosLocalidades Por Referencia)
+	Definir opcionMenuAccion, numLocalidad Como Entero
+	Definir salirGestion Como Logico
+	Definir nuevoEstado Como Caracter
+	
+	salirGestion <- Falso
+	
+	Repetir 
+		Limpiar Pantalla
+		Escribir "===================================================================="
+		Escribir "                     Gestionar localidades                          "
+		Escribir "===================================================================="
+		
+		// Muestra en pantalla el listado de las 3 localidades hardcodeadas y el estado actual
+		Escribir "Localidad N° 1 | Nombre: ", ubicaciones[0], " | Estado: ", estadosLocalidades[0]
+		Escribir "Localidad N° 2 | Nombre: ", ubicaciones[1], " | Estado: ", estadosLocalidades[1]
+		Escribir "Localidad N° 3 | Nombre: ", ubicaciones[2], " | Estado: ", estadosLocalidades[2]
+		
+		Escribir "--------------------------------------------------------------------"
+		Escribir "1. Cambiar estado de localidad (Activar / Suspender)"
+		Escribir "2. Volver al menu principal"
+		Escribir Sin Saltar "Ingrese una opcion: "
+		Leer opcionMenuAccion
+		
+		Segun opcionMenuAccion Hacer
+			1:
+				Escribir "--------------------------------------------------------------------"
+				Escribir Sin Saltar "Ingrese el N° de localidad a modificar (1 a 3): "
+				Leer numLocalidad
+				// Modifica el estado de la localidad seleccionada (a Activa o Suspendido)
+				Segun numLocalidad Hacer
+					1:
+						Si estadosLocalidades[0] == "Activa" Entonces
+							estadosLocalidades[0] <- "Suspendido"
+							nuevoEstado <- "Suspendido"
+						SiNo
+							estadosLocalidades[0] <- "Activa"
+							nuevoEstado <- "Activa"
+						FinSi
+						Escribir ""
+						Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+						Esperar 2.0 Segundos
+					2:
+						Si estadosLocalidades[1] == "Activa" Entonces
+							estadosLocalidades[1] <- "Suspendido"
+							nuevoEstado <- "Suspendido"
+						SiNo
+							estadosLocalidades[1] <- "Activa"
+							nuevoEstado <- "Activa"
+						FinSi
+						Escribir ""
+						Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+						Esperar 2.0 Segundos
+					3:
+						Si estadosLocalidades[2] == "Activa" Entonces
+							estadosLocalidades[2] <- "Suspendido"
+							nuevoEstado <- "Suspendido"
+						SiNo
+							estadosLocalidades[2] <- "Activa"
+							nuevoEstado <- "Activa"
+						FinSi
+						Escribir ""
+						Escribir "¡Estado actualizado con exito! Nuevo estado: ", nuevoEstado
+						Esperar 2.0 Segundos
+					De Otro Modo:
+						Escribir ""
+						Escribir "Numero de localidad invalido."
+						Esperar 2.0 Segundos
+				FinSegun
+			2:
+				salirGestion <- Verdadero
+			De Otro Modo:
+				Escribir ""
+				Escribir "Opcion invalida. Intente nuevamente."
+				Esperar 2.0 Segundos
+		FinSegun
+		
+	Hasta Que salirGestion
+	Limpiar Pantalla
+FinSubAlgoritmo
+
 // ......................................................................................
 //                         FUNCIONES y PROCESOS DEL USUARIO CHOFER 
 // ......................................................................................
