@@ -151,7 +151,7 @@ Algoritmo SIGAM
 								mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
 								
 								si solicitudConfirmada= Verdadero Entonces
-									choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes)
+									choferEncontrado<- MotorDeBusqueda(solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes, tiposGrua, solicitudTipoVehiculos)
 									motorDeAsignacion(choferEncontrado,cantSolicitudes-1,nombresChoferes,choferesAsignados,estadosChoferes,cantSolicitudes,estadosSolicitudes, estadosServicio)
 									opcionPost <- opcionPostSolicitud
 									Segun opcionPost Hacer
@@ -598,7 +598,7 @@ FinSubAlgoritmo
 
 
 //Motor de busqueda  
-Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes Por Referencia)
+Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,localidadesChoferes, estadosChoferes Por Referencia, tiposGrua, solicitudTipoVehiculos)
 	Definir buscaChofer como entero
 	definir i Como Entero
 	buscaChofer = -1
@@ -606,8 +606,9 @@ Funcion buscaChofer <- motorDeBusqueda (solicitudUbicaciones,cantSolicitudes,loc
 		si buscaChofer = -1 Entonces
 			si estadosChoferes[i]= "Disponible"
 				si localidadesChoferes[i] = solicitudUbicaciones[cantSolicitudes-1]
-					buscaChofer = i;
-					//	estadosChoferes[i]= "Ocupado"
+					si tiposGrua[i] = solicitudTipoVehiculos[cantSolicitudes-1]
+						buscaChofer = i;
+					FinSi
 				FinSi
 			FinSi
 		FinSi
@@ -1035,9 +1036,9 @@ SubAlgoritmo gestionarEstadoUsuarios(estadosUsuariosSistema Por Referencia, nomb
 					Escribir "                Listado de Usuarios (Chofer)"
 					Escribir "--------------------------------------------------------------------"
 					
-					Escribir "Usuario N° 1 | Nombre: ", nombresChoferes[0], " | Estado: ", estadosUsuariosSistema[0]
-					Escribir "Usuario N° 2 | Nombre: ", nombresChoferes[1], " | Estado: ", estadosUsuariosSistema[1]
-					Escribir "Usuario N° 3 | Nombre: ", nombresChoferes[2], " | Estado: ", estadosUsuariosSistema[2]
+					Escribir "Usuario N° 1 | Nombre: ", nombresChoferes[0], " | Cuenta: ", estadosUsuariosSistema[0]
+					Escribir "Usuario N° 2 | Nombre: ", nombresChoferes[1], " | Cuenta: ", estadosUsuariosSistema[1]
+					Escribir "Usuario N° 3 | Nombre: ", nombresChoferes[2], " | Cuenta: ", estadosUsuariosSistema[2]
 					
 					Escribir "--------------------------------------------------------------------"
 					Escribir "1. Cambiar estado de usuario (Activar / Suspender)"
@@ -1108,9 +1109,9 @@ SubAlgoritmo gestionarEstadoUsuarios(estadosUsuariosSistema Por Referencia, nomb
 					Escribir "--------------------------------------------------------------------"
 					
 					// Mostramos la lista fija de clientes (posiciones 3, 4 y 5 del vector global)
-					Escribir "Usuario N° 1 | Nombre: ", nombresClientes[0], " | Estado: ", estadosUsuariosSistema[3]
-					Escribir "Usuario N° 2 | Nombre: ", nombresClientes[1], " | Estado: ", estadosUsuariosSistema[4]
-					Escribir "Usuario N° 3 | Nombre: ", nombresClientes[2], " | Estado: ", estadosUsuariosSistema[5]
+					Escribir "Usuario N° 1 | Nombre: ", nombresClientes[0], " | Cuenta: ", estadosUsuariosSistema[3]
+					Escribir "Usuario N° 2 | Nombre: ", nombresClientes[1], " | Cuenta: ", estadosUsuariosSistema[4]
+					Escribir "Usuario N° 3 | Nombre: ", nombresClientes[2], " | Cuenta: ", estadosUsuariosSistema[5]
 					
 					Escribir "--------------------------------------------------------------------"
 					Escribir "1. Cambiar estado de usuario (Activar / Suspender)"
@@ -1441,6 +1442,7 @@ Funcion prioridad <- calcularPrioridad
 	
 	// Pregunta 2: Zona peligrosa
 	si puntaje <> -1 Entonces
+		
 		mostrarSolicitudAuxilio;
 		Escribir "¿Se encuentra en una zona peligrosa? ";
 		Escribir "1. Si"
