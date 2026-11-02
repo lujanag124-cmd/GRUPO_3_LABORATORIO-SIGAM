@@ -305,8 +305,7 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "3) Contactar a soporte";
 	Escribir "4) Cerrar sesion";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opcion: ";
-	Leer opcionUsuario;
+	opcionUsuario<-ValidarMenuGenerico(4)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
@@ -321,8 +320,7 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "4) Contactar a soporte";
 	Escribir "5) Cerrar sesion";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opcion: ";
-	Leer opcionUsuario;
+	opcionUsuario<-ValidarMenuGenerico(5)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
@@ -336,8 +334,7 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "2) Gestionar localidades"; 
 	Escribir "3) Cerrar sesion";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opcion: ";
-	Leer opcionUsuario;
+	opcionUsuario<-ValidarMenuGenerico(3)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
@@ -351,8 +348,7 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "3) Ver historial de reclamos";
 	Escribir "4) Cerrar sesion";
 	Escribir "";
-	Escribir Sin Saltar "Ingrese una opcion: ";
-	Leer opcionUsuario;
+	opcionUsuario<-ValidarMenuGenerico(4)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
@@ -440,57 +436,34 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Definir opcionVehiculos Como Entero
 	Definir prioridad Como Entero
 	
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "Seleccione la ubicacion: ";
-		Escribir "1. Merlo"
-		Escribir "2. Ituzaingo"
-		Escribir "3. Moron"
-		leer opcionUbicaciones;
-		Limpiar Pantalla
-		
-		si opcionUbicaciones < 1 o opcionUbicaciones > 3 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla 
-		FinSi
-		
-	Hasta Que opcionUbicaciones >= 1 y opcionUbicaciones <= 3
+	mostrarSolicitudAuxilio;
+	Escribir "Seleccione la ubicacion: ";
+	Escribir "1. Merlo"
+	Escribir "2. Ituzaingo"
+	Escribir "3. Moron"
+	
+	opcionUbicaciones <- ValidarMenuGenerico(3)
+	Limpiar Pantalla
 	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
 	
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "Seleccione el tipo de vehiculo: ";
-		Escribir "1. Moto"
-		Escribir "2. Auto"
-		Escribir "3. Camioneta"
-		leer opcionVehiculos;
-		Limpiar Pantalla
-		
-		Si opcionVehiculos < 1 o opcionVehiculos > 3 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla 
-		FinSi
-		
-	Hasta Que opcionVehiculos >= 1 y opcionVehiculos <= 3 
+	mostrarSolicitudAuxilio;
+	Escribir "Seleccione el tipo de vehiculo: ";
+	Escribir "1. Moto"
+	Escribir "2. Auto"
+	Escribir "3. Camioneta"
+	
+	opcionVehiculos <- ValidarMenuGenerico(3)
+	Limpiar Pantalla
 	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
 	
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "Seleccione la situacion: ";
-		Escribir "1. Pinchadura"
-		Escribir "2. Falla mecanica"
-		Escribir "3. Accidente/Choque"
-		Leer opcionSituaciones;
-		Limpiar Pantalla
-		
-		si opcionSituaciones < 1 o opcionSituaciones > 3 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla
-		FinSi
-	Hasta Que opcionSituaciones >= 1 y opcionSituaciones <= 3 
+	mostrarSolicitudAuxilio;
+	Escribir "Seleccione la situacion: ";
+	Escribir "1. Pinchadura"
+	Escribir "2. Falla mecanica"
+	Escribir "3. Accidente/Choque"
+	
+	opcionSituaciones <- ValidarMenuGenerico(3)
+	Limpiar Pantalla
 	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
 	
 	
@@ -526,12 +499,9 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Escribir "..............................................................";
 	Escribir "1. Confirmar solicitud"
 	Escribir "2. Cancelar solicitud"
-	Leer confirmar;
+	confirmar <- ValidarMenuGenerico(2)
 	
-	Mientras  confirmar <> 1 y confirmar <> 2 Hacer
-		Escribir "Por favor, ingrese una opcion correcta: ";
-		Leer confirmar;
-	FinMientras
+
 	
 	si confirmar = 1 Entonces
 		confirmada = Verdadero;
@@ -658,23 +628,24 @@ SubAlgoritmo mostrarServicioCliente(patentes, cantSolicitudes,solicitudTipoVehic
 	Definir i como entero;
 	Definir encontrada como logico;
 	encontrada = falso;
-	
-	Para i=0 Hasta  cantSolicitudes -1 Hacer
-		Si clientesSolicitudes[i] = clienteLogueado y estadosSolicitudes[i] <> "Finalizado" Entonces
-			encontrada= Verdadero
-			Escribir "Patente: ", patentes[i];
-			Escribir "Ubicacion: ", solicitudUbicaciones[i];
-			Escribir "Vehiculo: ", solicitudTipoVehiculos[i];
-			Escribir "Situacion: ",solicitudSituaciones[i];
-			Escribir "Estado: ", estadosSolicitudes[i];
-			
-			Si estadosSolicitudes[i]= estadosServicios[0] Entonces
-				Escribir  "Chofer: Aun no asignado" 
-			SiNo
-				Escribir "Chofer: ", nombresChoferes[choferesAsignados[i]]
+	si cantSolicitudes > 0 Entonces
+		Para i=0 Hasta  cantSolicitudes -1 Hacer
+			Si clientesSolicitudes[i] = clienteLogueado y estadosSolicitudes[i] <> "Finalizado" Entonces
+				encontrada= Verdadero
+				Escribir "Patente: ", patentes[i];
+				Escribir "Ubicacion: ", solicitudUbicaciones[i];
+				Escribir "Vehiculo: ", solicitudTipoVehiculos[i];
+				Escribir "Situacion: ",solicitudSituaciones[i];
+				Escribir "Estado: ", estadosSolicitudes[i];
+				
+				Si estadosSolicitudes[i]= estadosServicios[0] Entonces
+					Escribir  "Chofer: Aun no asignado" 
+				SiNo
+					Escribir "Chofer: ", nombresChoferes[choferesAsignados[i]]
+				FinSi
 			FinSi
-		FinSi
-	FinPara
+		FinPara
+	FinSi
 	
 	Si encontrada= falso Entonces
 		Escribir "No tiene servicios activos"
@@ -1405,17 +1376,11 @@ FinSubAlgoritmo
 // MENU > 2) Servicio asignado:: Es un SUBMENU para cuando el chofer tenga asignado un viaje
 Funcion opcionChofer <- opcionServicioChofer
 	Definir opcionChofer Como Entero
-	Repetir
-		Escribir ""
-		Escribir "1. Iniciar viaje"
-		Escribir "2. Volver al menu principal"
-		Leer opcionChofer
-		
-		si opcionChofer < 1 o opcionChofer > 2 Entonces
-			Limpiar Pantalla
-			Escribir "Por favor, ingrese una opcion correcta: "
-		FinSi
-	Hasta Que opcionChofer >= 1 y opcionChofer <=2 
+
+	Escribir ""
+	Escribir "1. Iniciar viaje"
+	Escribir "2. Volver al menu principal"
+	opcionChofer<-ValidarMenuGenerico(2)
 FinFuncion
 
 // Calcula el nivel de urgencia/prioridad de una solicitud de auxilio con preguntas y sistema de puntos 
@@ -1425,21 +1390,12 @@ Funcion prioridad <- calcularPrioridad
 	
 	// Pregunta 1: Tipo de vía
 	mostrarSolicitudAuxilio;
-	Repetir
-		Escribir "¿En que tipo de via se encuentra? ";
-		Escribir "1. Autopista"
-		Escribir "2. Ruta"
-		Escribir "3. Calle"
-		Leer opcionVia;
-		Limpiar Pantalla
-		
-		si opcionVia < 1 o opcionVia > 3 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla
-		FinSi
-		
-	Hasta Que opcionVia >= 1 y opcionVia <= 3
+	Escribir "¿En que tipo de via se encuentra? ";
+	Escribir "1. Autopista"
+	Escribir "2. Ruta"
+	Escribir "3. Calle"
+	opcionVia<-ValidarMenuGenerico(3)
+	Limpiar Pantalla
 	
 	// Asigna puntos según el tipo de vía  
 	segun opcionVia Hacer
@@ -1449,63 +1405,36 @@ Funcion prioridad <- calcularPrioridad
 	FinSegun
 	
 	// Pregunta 2: Zona peligrosa
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "¿Se encuentra en una zona peligrosa? ";
-		Escribir "1. Si"
-		Escribir "2. No"
-		Leer opcionZonaPeligrosa;
-		Limpiar Pantalla
-		
-		si opcionZonaPeligrosa < 1 o opcionZonaPeligrosa > 2 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla
-		FinSi
-		
-	Hasta Que opcionZonaPeligrosa >= 1 y opcionZonaPeligrosa <= 2
+	mostrarSolicitudAuxilio;
+	Escribir "¿Se encuentra en una zona peligrosa? ";
+	Escribir "1. Si"
+	Escribir "2. No"
+	opcionZonaPeligrosa<-ValidarMenuGenerico(2)
+	Limpiar Pantalla
 	
 	si opcionZonaPeligrosa=1 Entonces
 		puntaje = puntaje + 3 // Se suma puntos si el usuario responde si
 	FinSi
 	
 	// Pregunta 3: Obstrucción de circulación
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "¿Se encuentra obstruyendo la circulacion? ";
-		Escribir "1. Si"
-		Escribir "2. No"
-		Leer opcionObstruyeCirculacion;
-		Limpiar Pantalla
-		
-		si opcionObstruyeCirculacion < 1 o opcionObstruyeCirculacion > 2 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla
-		FinSi
-		
-	Hasta Que opcionObstruyeCirculacion >= 1 y opcionObstruyeCirculacion <= 2
+	mostrarSolicitudAuxilio;
+	Escribir "¿Se encuentra obstruyendo la circulacion? ";
+	Escribir "1. Si"
+	Escribir "2. No"
+	opcionObstruyeCirculacion<-ValidarMenuGenerico(2)
+	Limpiar Pantalla
 	
 	Si opcionObstruyeCirculacion=1 Entonces
 		puntaje = puntaje + 2 // Se suma puntos si el usuario responde si
 	FinSi
 	
 	// Pregunta 4: Vehículo totalmente detenido
-	Repetir
-		mostrarSolicitudAuxilio;
-		Escribir "¿Su vehiculo esta totalmente detenido? ";
-		Escribir "1. Si"
-		Escribir "2. No"
-		Leer opcionTotalmenteDetenido;
-		Limpiar Pantalla
-		
-		si opcionTotalmenteDetenido < 1 o opcionTotalmenteDetenido > 2 Entonces
-			Escribir "Opción incorrecta. Por favor, intente nuevamente."
-			Esperar 3.0 Segundos
-			Limpiar Pantalla
-		FinSi
-		
-	Hasta Que opcionTotalmenteDetenido >= 1 y opcionTotalmenteDetenido <= 2
+	mostrarSolicitudAuxilio;
+	Escribir "¿Su vehiculo esta totalmente detenido? ";
+	Escribir "1. Si"
+	Escribir "2. No"
+	opcionTotalmenteDetenido<-ValidarMenuGenerico(2)
+	Limpiar Pantalla
 	
 	Si opcionTotalmenteDetenido=1 Entonces
 		puntaje = puntaje + 2  // Se suma puntos si el usuario responde si
@@ -1553,3 +1482,66 @@ Funcion solicitudEncontrada<- buscarSolicitudPendiente(estadosSolicitudes, solic
 		FinSi
 	FinPara
 FinFuncion
+
+
+Funcion opcionElegida <- ValidarMenuGenerico(cantOpciones)
+    Definir entrada, caracterActual Como Cadena
+    Definir esValido, esNumero Como Logico
+    Definir opcionElegida, i Como Entero
+	
+    esValido <- Falso
+    opcionElegida <- -1
+	
+    Repetir
+        Escribir Sin Saltar "Ingrese una opcion (1 al ", cantOpciones, "): "
+        Leer entrada
+		
+        entrada <- Minusculas(entrada)
+		
+        // Validamos si la entrada contiene solamente numeros
+        esNumero <- Verdadero
+		
+        Si Longitud(entrada) = 0 Entonces
+            esNumero <- Falso
+        SiNo
+            Para i <- 0 Hasta Longitud(entrada) - 1 Hacer
+                caracterActual <- SubCadena(entrada, i, i)
+				
+                Si caracterActual < "0" O caracterActual > "9" Entonces
+                    esNumero <- Falso
+                FinSi
+            FinPara
+        FinSi
+		
+        // Convertimos la entrada segun corresponda
+        Si esNumero Entonces
+            opcionElegida <- ConvertirANumero(entrada)
+        SiNo
+            Segun entrada Hacer
+                "uno":
+                    opcionElegida <- 1
+                "dos":
+                    opcionElegida <- 2
+                "tres":
+                    opcionElegida <- 3
+                "cuatro":
+                    opcionElegida <- 4
+                "cinco":
+                    opcionElegida <- 5
+                De Otro Modo:
+                    opcionElegida <- -1
+            FinSegun
+        FinSi
+		
+        // Validamos el rango permitido
+        Si opcionElegida >= 1 Y opcionElegida <= cantOpciones Entonces
+            esValido <- Verdadero
+        SiNo
+            Escribir "Error. Ingrese una opcion entre 1 y ", cantOpciones, "."
+        FinSi
+		
+    Hasta Que esValido = Verdadero
+	
+FinFuncion
+
+
