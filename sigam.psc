@@ -430,91 +430,121 @@ FinSubAlgoritmo
 // Funcion para solicitud de auxilio
 Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia,clientesSolicitudes Por Referencia,clienteLogueado)
 	Definir confirmar como entero; 
-	Definir confirmada Como Logico
+	Definir confirmada,cancelada Como Logico
 	Definir opcionUbicaciones Como Entero
 	Definir opcionSituaciones Como Entero
 	Definir opcionVehiculos Como Entero
 	Definir prioridad Como Entero
+	cancelada=falso 
 	
 	mostrarSolicitudAuxilio;
 	Escribir "Seleccione la ubicacion: ";
 	Escribir "1. Merlo"
 	Escribir "2. Ituzaingo"
 	Escribir "3. Moron"
-	
-	opcionUbicaciones <- ValidarMenuGenerico(3)
+	Escribir "---------------------------------------------------------"
+	Escribir "4.Cancelar solicitud."
+	opcionUbicaciones <- ValidarMenuGenerico(4)
+	si opcionubicaciones==4 Entonces
+		cancelada = Verdadero
+	SiNo
+		solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
+	FinSi
 	Limpiar Pantalla
-	solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
 	
-	mostrarSolicitudAuxilio;
-	Escribir "Seleccione el tipo de vehiculo: ";
-	Escribir "1. Moto"
-	Escribir "2. Auto"
-	Escribir "3. Camioneta"
 	
-	opcionVehiculos <- ValidarMenuGenerico(3)
-	Limpiar Pantalla
-	solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
+	si NO cancelada Entonces
+		mostrarSolicitudAuxilio;
+		Escribir "Seleccione el tipo de vehiculo: ";
+		Escribir "1. Moto"
+		Escribir "2. Auto"
+		Escribir "3. Camioneta"
+		Escribir "---------------------------------------------------------"
+		Escribir "4.Cancelar solicitud."
+		opcionVehiculos <- ValidarMenuGenerico(4)
+		si opcionVehiculos ==4 Entonces
+			cancelada = Verdadero
+		SiNo
+			solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
+		FinSi
+		Limpiar Pantalla
+	FinSi
 	
-	mostrarSolicitudAuxilio;
-	Escribir "Seleccione la situacion: ";
-	Escribir "1. Pinchadura"
-	Escribir "2. Falla mecanica"
-	Escribir "3. Accidente/Choque"
 	
-	opcionSituaciones <- ValidarMenuGenerico(3)
-	Limpiar Pantalla
-	solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
-	
+	si NO cancelada Entonces
+		mostrarSolicitudAuxilio;
+		Escribir "Seleccione la situacion: ";
+		Escribir "1. Pinchadura"
+		Escribir "2. Falla mecanica"
+		Escribir "3. Accidente/Choque"
+		Escribir "---------------------------------------------------------"
+		Escribir "4.Cancelar solicitud."
+		opcionSituaciones <- ValidarMenuGenerico(4)
+		si opcionSituaciones==4 Entonces
+			cancelada = Verdadero
+		SiNo
+			solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
+		FinSi
+		Limpiar Pantalla
+	FinSi	
 	
 	// Patente con validación 
-    Repetir
-		mostrarSolicitudAuxilio;
-        Escribir "Ingrese su patente (ej: abc123): ";
-        Leer patentes[cantSolicitudes]
-		Limpiar Pantalla
-        
-        Si NO validarPatente(patentes[cantSolicitudes]) Entonces
-            Escribir "Patente incorrecta. Debe contener 3 letras seguidas de 3 números (ej: abc123)."
-            Esperar 3.5 Segundos
+	si NO cancelada Entonces
+		Repetir
+			mostrarSolicitudAuxilio;
+			Escribir "Ingrese su patente (ej: abc123): ";
+			Leer patentes[cantSolicitudes]
 			Limpiar Pantalla
-        FinSi
-    Hasta Que validarPatente(patentes[cantSolicitudes])
-    
-	prioridad = calcularPrioridad
+			
+			Si NO validarPatente(patentes[cantSolicitudes]) Entonces
+				Escribir "Patente incorrecta. Debe contener 3 letras seguidas de 3 números (ej: abc123)."
+				Esperar 3.5 Segundos
+				Limpiar Pantalla
+			FinSi
+		Hasta Que validarPatente(patentes[cantSolicitudes])
+	FinSi
+	si NO cancelada Entonces
+		prioridad = calcularPrioridad
+		si prioridad = -1 Entonces
+			cancelada = Verdadero
+		FinSi
+	FinSi
 	
-	puntajesPrioridad[cantSolicitudes] = prioridad
-	
-//	Limpiar Pantalla
-	Escribir "--------------------------------------";
-	Escribir "     Los datos seleccionados son:     ";
-	Escribir "--------------------------------------";
-	Escribir "Ubicacion: ", ubicaciones[opcionUbicaciones-1]; 
-	Escribir "Datos del vehiculo: ", tipoVehiculos[opcionVehiculos-1];
-	Escribir "Situacion : ", situaciones[opcionSituaciones-1];
-	Escribir "Patente: ", patentes[cantsolicitudes]
-	Escribir "";
-	Escribir "..............................................................";
-	Escribir " Para avanzar con su solicitud, seleccione la opcion deseada.  ";
-	Escribir "..............................................................";
-	Escribir "1. Confirmar solicitud"
-	Escribir "2. Cancelar solicitud"
-	confirmar <- ValidarMenuGenerico(2)
-	
-
-	
-	si confirmar = 1 Entonces
-		confirmada = Verdadero;
-		clientesSolicitudes[cantSolicitudes]=clienteLogueado
-		cantSolicitudes=cantSolicitudes+1
+	si No cancelada Entonces
+		puntajesPrioridad[cantSolicitudes] = prioridad
 		
-	SiNo
-		confirmada = Falso; 
+		//	Limpiar Pantalla
+		Escribir "--------------------------------------";
+		Escribir "     Los datos seleccionados son:     ";
+		Escribir "--------------------------------------";
+		Escribir "Ubicacion: ", ubicaciones[opcionUbicaciones-1]; 
+		Escribir "Datos del vehiculo: ", tipoVehiculos[opcionVehiculos-1];
+		Escribir "Situacion : ", situaciones[opcionSituaciones-1];
+		Escribir "Patente: ", patentes[cantsolicitudes]
+		Escribir "";
+		Escribir "..............................................................";
+		Escribir " Para avanzar con su solicitud, seleccione la opcion deseada.  ";
+		Escribir "..............................................................";
+		Escribir "1. Confirmar solicitud"
+		Escribir "2. Cancelar solicitud"
+		confirmar <- ValidarMenuGenerico(2)
+		
+	FinSi
+	si cancelada Entonces
+		confirmada = Falso
 		cantCanceladas = cantCanceladas+1;
+	SiNo
+		si confirmar = 1 Entonces
+			confirmada = Verdadero;
+			clientesSolicitudes[cantSolicitudes]=clienteLogueado
+			cantSolicitudes=cantSolicitudes+1
+		sino
+			confirmada = Falso; 
+			cantCanceladas = cantCanceladas+1;
+		FinSi
 	FinSi
 	Limpiar Pantalla
 FinFuncion
-
 // Validación para el ingreso de PATENTE
 Funcion esValida <- validarPatente(patente)
     Definir esValida Como Logico
@@ -1206,7 +1236,7 @@ FinSubAlgoritmo
 // ......................................................................................   
 // MENU ADMIN: 2) Gestionar localidades
 // ......................................................................................
- 
+
 SubAlgoritmo gestionarLocalidadesSistema(ubicaciones Por Referencia, estadosLocalidades Por Referencia)
 	Definir opcionMenuAccion, numLocalidad Como Entero
 	Definir salirGestion Como Logico
@@ -1376,7 +1406,7 @@ FinSubAlgoritmo
 // MENU > 2) Servicio asignado:: Es un SUBMENU para cuando el chofer tenga asignado un viaje
 Funcion opcionChofer <- opcionServicioChofer
 	Definir opcionChofer Como Entero
-
+	
 	Escribir ""
 	Escribir "1. Iniciar viaje"
 	Escribir "2. Volver al menu principal"
@@ -1394,7 +1424,12 @@ Funcion prioridad <- calcularPrioridad
 	Escribir "1. Autopista"
 	Escribir "2. Ruta"
 	Escribir "3. Calle"
-	opcionVia<-ValidarMenuGenerico(3)
+	Escribir "---------------------------------------------------------"
+	Escribir "4.Cancelar solicitud."
+	opcionVia<-ValidarMenuGenerico(4)
+	si opcionVia = 4 Entonces
+		puntaje = -1
+	FinSi
 	Limpiar Pantalla
 	
 	// Asigna puntos según el tipo de vía  
@@ -1405,41 +1440,57 @@ Funcion prioridad <- calcularPrioridad
 	FinSegun
 	
 	// Pregunta 2: Zona peligrosa
-	mostrarSolicitudAuxilio;
-	Escribir "¿Se encuentra en una zona peligrosa? ";
-	Escribir "1. Si"
-	Escribir "2. No"
-	opcionZonaPeligrosa<-ValidarMenuGenerico(2)
-	Limpiar Pantalla
-	
-	si opcionZonaPeligrosa=1 Entonces
-		puntaje = puntaje + 3 // Se suma puntos si el usuario responde si
+	si puntaje <> -1 Entonces
+		mostrarSolicitudAuxilio;
+		Escribir "¿Se encuentra en una zona peligrosa? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Escribir "---------------------------------------------------------"
+		Escribir "3.Cancelar solicitud."
+		opcionZonaPeligrosa<-ValidarMenuGenerico(3)
+		Limpiar Pantalla
+		si opcionZonaPeligrosa = 3 Entonces
+			puntaje = -1
+		FinSi
+		si opcionZonaPeligrosa=1 Entonces
+			puntaje = puntaje + 3 // Se suma puntos si el usuario responde si
+		FinSi
 	FinSi
 	
 	// Pregunta 3: Obstrucción de circulación
-	mostrarSolicitudAuxilio;
-	Escribir "¿Se encuentra obstruyendo la circulacion? ";
-	Escribir "1. Si"
-	Escribir "2. No"
-	opcionObstruyeCirculacion<-ValidarMenuGenerico(2)
-	Limpiar Pantalla
-	
-	Si opcionObstruyeCirculacion=1 Entonces
-		puntaje = puntaje + 2 // Se suma puntos si el usuario responde si
+	si puntaje <> -1 Entonces
+		mostrarSolicitudAuxilio;
+		Escribir "¿Se encuentra obstruyendo la circulacion? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Escribir "---------------------------------------------------------"
+		Escribir "3.Cancelar solicitud."
+		opcionObstruyeCirculacion<-ValidarMenuGenerico(3)
+		Limpiar Pantalla
+		si opcionObstruyeCirculacion = 3 Entonces
+			puntaje = -1
+		FinSi
+		Si opcionObstruyeCirculacion=1 Entonces
+			puntaje = puntaje + 2 // Se suma puntos si el usuario responde si
+		FinSi
 	FinSi
-	
 	// Pregunta 4: Vehículo totalmente detenido
-	mostrarSolicitudAuxilio;
-	Escribir "¿Su vehiculo esta totalmente detenido? ";
-	Escribir "1. Si"
-	Escribir "2. No"
-	opcionTotalmenteDetenido<-ValidarMenuGenerico(2)
-	Limpiar Pantalla
-	
-	Si opcionTotalmenteDetenido=1 Entonces
-		puntaje = puntaje + 2  // Se suma puntos si el usuario responde si
-	FinSi
-	
+	si puntaje <> -1 Entonces
+		mostrarSolicitudAuxilio;
+		Escribir "¿Su vehiculo esta totalmente detenido? ";
+		Escribir "1. Si"
+		Escribir "2. No"
+		Escribir "---------------------------------------------------------"
+		Escribir "3.Cancelar solicitud."
+		opcionTotalmenteDetenido<-ValidarMenuGenerico(3)
+		Limpiar Pantalla
+		si opcionTotalmenteDetenido = 3 Entonces
+			puntaje = -1
+		FinSi
+		Si opcionTotalmenteDetenido=1 Entonces
+			puntaje = puntaje + 2  // Se suma puntos si el usuario responde si
+		FinSi
+	FinSi	
 	// El puntaje acumulado se asigna a la variable de retorno
 	prioridad = puntaje
 FinFuncion
@@ -1493,6 +1544,7 @@ Funcion opcionElegida <- ValidarMenuGenerico(cantOpciones)
     opcionElegida <- -1
 	
     Repetir
+		Escribir " "
         Escribir Sin Saltar "Ingrese una opcion (1 al ", cantOpciones, "): "
         Leer entrada
 		
@@ -1543,5 +1595,3 @@ Funcion opcionElegida <- ValidarMenuGenerico(cantOpciones)
     Hasta Que esValido = Verdadero
 	
 FinFuncion
-
-
