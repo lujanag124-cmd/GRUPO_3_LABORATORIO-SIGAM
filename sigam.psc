@@ -10,6 +10,7 @@ Algoritmo SIGAM
 	Definir loginActivo, solicitudConfirmada,tieneSolicitudActiva Como Logico;
 	Definir valorUsuario Como Caracter;  //Guarda la info de validalogin
 	Definir cantSolicitudes, cantCanceladas, puntajesPrioridad, clientesSolicitudes,i Como Entero;  
+	Definir UNO, DOS, TRES, CUATRO, CINCO como entero;
 	//Soporte 
 	Definir titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos Como Caracter;
 	Definir cantReclamos Como Entero;
@@ -57,6 +58,11 @@ Algoritmo SIGAM
 	choferLogueado = -1;
 	clienteLogueado = -1; 
 	cantReclamos = 0; // Soporte
+	UNO = 1;
+	DOS = 2;
+	TRES = 3;
+	CUATRO = 4;
+	CINCO = 5 ;
 	
 	
 	Mientras verdadero hacer
@@ -100,7 +106,7 @@ Algoritmo SIGAM
 		Mientras loginActivo Hacer
 			Segun valorUsuario Hacer
 				"Chofer" :
-					menuChofer(opcionUsuario)
+					menuChofer(opcionUsuario, CINCO)
 					Segun opcionUsuario Hacer
 						1:estadoActualChofer(choferLogueado, estadosChoferes, estadosDisponibles,estadosSolicitudes, solicitudUbicaciones, localidadesChoferes,puntajesPrioridad, cantSolicitudes,nombresChoferes,choferesAsignados,estadosServicio)
 						2:si cantSolicitudes=0 Entonces
@@ -130,7 +136,7 @@ Algoritmo SIGAM
 						Limpiar Pantalla
 				FinSegun
 			"Cliente" :
-				menuCliente(opcionUsuario)
+				menuCliente(opcionUsuario,CUATRO)
 				Segun opcionUsuario Hacer
 					1: //Valida que si el usuario logueado ya tiene una solicitud realizada//
 						tieneSolicitudActiva = Falso
@@ -146,7 +152,7 @@ Algoritmo SIGAM
 							si tieneSolicitudActiva Entonces
 								Escribir "Usted ya tiene una solicitud en curso."
 							sino 
-								solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad,clientesSolicitudes,clienteLogueado)
+								solicitudConfirmada <- solicitarAuxilio(solicitudUbicaciones,solicitudTipoVehiculos,solicitudSituaciones,cantSolicitudes,cantCanceladas, ubicaciones, tipoVehiculos, situaciones, patentes,puntajesPrioridad,clientesSolicitudes,clienteLogueado,CUATRO,DOS)
 								
 								mostrarSolicitudConfirmada(solicitudConfirmada, solicitudUbicaciones, solicitudTipoVehiculos, solicitudSituaciones, cantSolicitudes,cantCanceladas, patentes)
 								
@@ -180,7 +186,7 @@ Algoritmo SIGAM
 						Limpiar Pantalla
 				FinSegun
 			"Admin" :
-				menuAdmin(opcionUsuario)
+				menuAdmin(opcionUsuario,TRES)
 				Segun opcionUsuario Hacer
 					1:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
 					2:gestionarLocalidadesSistema(ubicaciones, estadosLocalidades)
@@ -191,7 +197,7 @@ Algoritmo SIGAM
 						Limpiar Pantalla
 				FinSegun
 			"Soporte" :
-				menuSoporte(opcionUsuario)
+				menuSoporte(opcionUsuario, CUATRO)
 				Segun opcionUsuario Hacer
 					1:verReclamosPendientes(titulosReclamos, acusadosReclamos, mensajesReclamos, tiposUsuarios, estadosReclamos, respuestasReclamos, cantReclamos)
 					2:gestionarEstadoUsuarios(estadosUsuariosSistema, nombresChoferes, nombresClientes)
@@ -296,7 +302,7 @@ FinFuncion
 //              Sección menus
 // .......................................
 // Menu Cliente
-SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
+SubAlgoritmo  menuCliente(opcionUsuario Por Referencia, CUATRO)
 	Escribir "=========================================="
 	Escribir "               Menu Cliente               "
 	Escribir "=========================================="
@@ -305,12 +311,12 @@ SubAlgoritmo  menuCliente(opcionUsuario Por Referencia)
 	Escribir "3) Contactar a soporte";
 	Escribir "4) Cerrar sesion";
 	Escribir "";
-	opcionUsuario<-ValidarMenuGenerico(4)
+	opcionUsuario<-ValidarMenuGenerico(CUATRO)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menu chofer
-SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
+SubAlgoritmo menuChofer(opcionUsuario Por Referencia,CINCO)
 	Escribir "=========================================="
 	Escribir "               Menu Chofer                "
 	Escribir "=========================================="
@@ -320,13 +326,13 @@ SubAlgoritmo menuChofer(opcionUsuario Por Referencia)
 	Escribir "4) Contactar a soporte";
 	Escribir "5) Cerrar sesion";
 	Escribir "";
-	opcionUsuario<-ValidarMenuGenerico(5)
+	opcionUsuario<-ValidarMenuGenerico(CINCO)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menu Administrador
 
-SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
+SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia, TRES)
 	Escribir "=========================================="
 	Escribir "            Menu Administrador            "
 	Escribir "=========================================="
@@ -334,12 +340,12 @@ SubAlgoritmo  menuAdmin(opcionUsuario Por Referencia)
 	Escribir "2) Gestionar localidades"; 
 	Escribir "3) Cerrar sesion";
 	Escribir "";
-	opcionUsuario<-ValidarMenuGenerico(3)
+	opcionUsuario<-ValidarMenuGenerico(TRES)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
 // Menú Soporte
-SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
+SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia, CUATRO)
 	Escribir "=========================================="
 	Escribir "               Menu Soporte               "
 	Escribir "=========================================="
@@ -348,7 +354,7 @@ SubAlgoritmo  menuSoporte(opcionUsuario Por Referencia)
 	Escribir "3) Ver historial de reclamos";
 	Escribir "4) Cerrar sesion";
 	Escribir "";
-	opcionUsuario<-ValidarMenuGenerico(4)
+	opcionUsuario<-ValidarMenuGenerico(CUATRO)
 	Limpiar Pantalla
 FinSubAlgoritmo
 
@@ -428,7 +434,7 @@ SubAlgoritmo mostrarSolicitudAuxilio
 FinSubAlgoritmo
 
 // Funcion para solicitud de auxilio
-Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia,clientesSolicitudes Por Referencia,clienteLogueado)
+Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, solicitudTipoVehiculos Por Referencia, solicitudSituaciones Por Referencia, cantSolicitudes Por Referencia,cantCanceladas Por Referencia,ubicaciones Por Referencia, tipovehiculos Por Referencia,situaciones Por Referencia, patentes Por Referencia,puntajesPrioridad Por Referencia,clientesSolicitudes Por Referencia,clienteLogueado,CUATRO,DOS)
 	Definir confirmar como entero; 
 	Definir confirmada,cancelada Como Logico
 	Definir opcionUbicaciones Como Entero
@@ -444,8 +450,8 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 	Escribir "3. Moron"
 	Escribir "---------------------------------------------------------"
 	Escribir "4.Cancelar solicitud."
-	opcionUbicaciones <- ValidarMenuGenerico(4)
-	si opcionubicaciones==4 Entonces
+	opcionUbicaciones <- ValidarMenuGenerico(CUATRO)
+	si opcionubicaciones==CUATRO Entonces
 		cancelada = Verdadero
 	SiNo
 		solicitudUbicaciones[cantSolicitudes]=ubicaciones[opcionUbicaciones-1];
@@ -461,8 +467,8 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 		Escribir "3. Camioneta"
 		Escribir "---------------------------------------------------------"
 		Escribir "4.Cancelar solicitud."
-		opcionVehiculos <- ValidarMenuGenerico(4)
-		si opcionVehiculos ==4 Entonces
+		opcionVehiculos <- ValidarMenuGenerico(CUATRO)
+		si opcionVehiculos ==CUATRO Entonces
 			cancelada = Verdadero
 		SiNo
 			solicitudTipoVehiculos[cantSolicitudes]=tipoVehiculos[opcionVehiculos-1];
@@ -479,8 +485,8 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 		Escribir "3. Accidente/Choque"
 		Escribir "---------------------------------------------------------"
 		Escribir "4.Cancelar solicitud."
-		opcionSituaciones <- ValidarMenuGenerico(4)
-		si opcionSituaciones==4 Entonces
+		opcionSituaciones <- ValidarMenuGenerico(CUATRO)
+		si opcionSituaciones==CUATRO Entonces
 			cancelada = Verdadero
 		SiNo
 			solicitudSituaciones[cantSolicitudes]=situaciones[opcionSituaciones-1];
@@ -527,7 +533,7 @@ Funcion confirmada <- solicitarAuxilio(solicitudUbicaciones Por Referencia, soli
 		Escribir "..............................................................";
 		Escribir "1. Confirmar solicitud"
 		Escribir "2. Cancelar solicitud"
-		confirmar <- ValidarMenuGenerico(2)
+		confirmar <- ValidarMenuGenerico(DOS)
 		
 	FinSi
 	si cancelada Entonces
